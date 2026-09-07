@@ -6730,7 +6730,7 @@
 
             function loadPasswordsFromSupabase() {
                 if (!supabaseClient) {
-                    console.warn('Supabase not available, using default passwords');
+                    console.warn('Supabase not available');
                     return Promise.resolve();
                 }
                 return supabaseClient.from('site_data').select('admin_password, system_password').eq('id', 1).single()
