@@ -1,0 +1,2445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>DSA Admin Panel · Professional CMS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+  
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    :root{--primary:#f0c14b;--primary-dark:#d49e18;--secondary:#071526;--bg:#0a1a2e;--card:#13253f;--border:rgba(255,255,255,.08);--text:#eaf0f6;--text-muted:#9eb1c5;--success:#4ade80;--danger:#f87171;--warning:#fbbf24;--radius:12px;--shadow:0 8px 30px rgba(0,0,0,.4);--text-xs:clamp(10px,1.2vw,12px);--text-sm:clamp(12px,1.5vw,14px);--text-base:clamp(14px,1.8vw,16px);--text-lg:clamp(16px,2.2vw,20px);--text-xl:clamp(20px,3vw,28px)}
+    html,body{height:100%;width:100%;}
+    body{font-family:'Poppins','Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;overflow:hidden;margin:0;padding:0;-webkit-text-size-adjust:100%;}
+    ::-webkit-scrollbar{width:4px;height:4px;}
+    ::-webkit-scrollbar-track{background:transparent;}
+    ::-webkit-scrollbar-thumb{background:var(--primary);border-radius:3px;}
+    
+    .sidebar{width:220px;min-height:100vh;background:var(--secondary);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;transition:transform .3s ease;z-index:100;}
+    .sidebar-brand{padding:14px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+    .sidebar-brand .logo{width:34px;height:34px;border-radius:50%;background:linear-gradient(145deg,#f8d56a,#e7aa24);display:flex;align-items:center;justify-content:center;font-size:var(--text-base);color:var(--secondary);flex-shrink:0;}
+    .sidebar-brand h1{font-size:var(--text-sm);font-weight:800;color:#fff;line-height:1.2;}
+    .sidebar-brand h1 span{color:var(--primary);}
+    .sidebar-brand small{display:block;font-size:var(--text-xs);color:var(--text-muted);font-weight:400;letter-spacing:1px;}
+    .sidebar-nav{padding:8px 10px;flex:1;overflow-y:auto;}
+    .sidebar-nav .nav-label{font-size:var(--text-xs);color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;padding:6px 8px 3px;font-weight:600;}
+    .sidebar-nav .nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:6px;color:var(--text-muted);font-size:var(--text-sm);font-weight:500;transition:all .2s;cursor:pointer;border:none;background:transparent;width:100%;font-family:inherit;text-align:left;min-height:44px;}
+    .sidebar-nav .nav-item i{width:16px;text-align:center;font-size:var(--text-base);flex-shrink:0;}
+    .sidebar-nav .nav-item:hover{background:rgba(255,255,255,.06);color:#fff;}
+    .sidebar-nav .nav-item.active{background:rgba(240,193,75,.15);color:var(--primary);border:1px solid rgba(240,193,75,.2);}
+    .sidebar-nav .nav-item .badge{margin-left:auto;background:rgba(240,193,75,.15);color:var(--primary);padding:1px 8px;border-radius:12px;font-size:var(--text-xs);font-weight:700;flex-shrink:0;}
+    .sidebar-footer{padding:8px 14px;border-top:1px solid var(--border);font-size:var(--text-xs);color:var(--text-muted);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+    .sidebar-footer .status-dot{width:6px;height:6px;border-radius:50%;background:var(--success);display:inline-block;animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+    
+    .main{flex:1;display:flex;flex-direction:column;min-height:100vh;overflow:hidden;width:100%;}
+    .topbar{background:var(--secondary);border-bottom:1px solid var(--border);padding:8px 12px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;flex-wrap:wrap;gap:6px;min-height:52px;}
+    .topbar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+    .topbar h2{font-size:var(--text-sm);font-weight:700;display:flex;align-items:center;gap:5px;}
+    .topbar h2 i{color:var(--primary);}
+    .topbar-actions{display:flex;gap:4px;flex-wrap:wrap;align-items:center;}
+    .topbar-actions button{padding:4px 10px;border:none;border-radius:5px;font-size:var(--text-xs);font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;white-space:nowrap;min-height:34px;}
+    .topbar-actions .btn-save{background:var(--primary);color:var(--secondary);}
+    .topbar-actions .btn-save:hover{transform:scale(1.04);}
+    .topbar-actions .btn-export{background:rgba(46,204,113,.15);color:#2ecc71;border:1px solid rgba(46,204,113,.2);}
+    .topbar-actions .btn-export:hover{background:rgba(46,204,113,.25);}
+    .content{flex:1;padding:10px 12px 20px;overflow-y:auto;background:var(--bg);-webkit-overflow-scrolling:touch;}
+    
+    .page{display:none;animation:fadeIn .3s ease;}
+    .page.active{display:block;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+    
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;}
+    .stat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+    .stat-card .label{font-size:var(--text-xs);color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+    .stat-card .value{font-size:var(--text-xl);font-weight:900;color:#fff;margin-top:2px;}
+    .stat-card .icon{float:right;font-size:var(--text-xl);color:rgba(240,193,75,.1);}
+    
+    .welcome-card{background:linear-gradient(135deg,#0a1a2e,#1a3050);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:14px;}
+    .welcome-card h3{font-size:var(--text-base);color:#fff;}
+    .welcome-card p{color:var(--text-muted);font-size:var(--text-sm);margin-top:3px;}
+    .welcome-card .quick-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
+    .welcome-card .quick-actions button{padding:6px 14px;border:none;border-radius:6px;font-size:var(--text-xs);font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;min-height:38px;}
+    .welcome-card .quick-actions .qa-primary{background:var(--primary);color:var(--secondary);}
+    .welcome-card .quick-actions .qa-primary:hover{transform:scale(1.04);}
+    .welcome-card .quick-actions .qa-secondary{background:rgba(255,255,255,.08);color:#fff;border:1px solid var(--border);}
+    .welcome-card .quick-actions .qa-secondary:hover{background:rgba(255,255,255,.15);}
+    
+    .editor-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;}
+    .editor-section .section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px;}
+    .editor-section .section-header h4{font-size:var(--text-sm);color:#fff;display:flex;align-items:center;gap:5px;}
+    .editor-section .section-header h4 i{color:var(--primary);}
+    .editor-section .section-header .actions{display:flex;gap:4px;flex-wrap:wrap;}
+    .editor-section .section-header .actions button{padding:3px 8px;border:none;border-radius:4px;font-size:var(--text-xs);font-weight:600;cursor:pointer;transition:all .2s;font-family:inherit;min-height:28px;}
+    .editor-section .section-header .actions .btn-add{background:rgba(46,204,113,.15);color:#2ecc71;}
+    .editor-section .section-header .actions .btn-add:hover{background:rgba(46,204,113,.25);}
+    .editor-section .section-header .actions .btn-remove{background:rgba(231,76,60,.15);color:#e74c3c;}
+    .editor-section .section-header .actions .btn-remove:hover{background:rgba(231,76,60,.25);}
+    .editor-field{margin-bottom:8px;}
+    .editor-field label{display:block;font-size:var(--text-xs);font-weight:600;color:var(--text-muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.3px;}
+    .editor-field input,.editor-field textarea,.editor-field select{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:5px;background:rgba(255,255,255,.04);color:#fff;font-size:var(--text-sm);font-family:inherit;transition:border-color .2s;outline:none;min-height:38px;}
+    .editor-field input:focus,.editor-field textarea:focus,.editor-field select:focus{border-color:var(--primary);}
+    .editor-field textarea{min-height:50px;resize:vertical;}
+    .editor-field select option{background:var(--bg);color:#fff;}
+    .editor-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    
+    .items-list{display:grid;gap:5px;margin-top:5px;}
+    .item-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:5px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;transition:all .2s;gap:6px;}
+    .item-card:hover{background:rgba(255,255,255,.06);border-color:rgba(240,193,75,.2);}
+    .item-card .info{flex:1;min-width:0;}
+    .item-card .info .title{font-weight:600;font-size:var(--text-sm);color:#fff;word-break:break-word;}
+    .item-card .info .desc{font-size:var(--text-xs);color:var(--text-muted);word-break:break-word;}
+    .item-card .info .tag{display:inline-block;padding:1px 6px;border-radius:10px;font-size:var(--text-xs);font-weight:700;margin-top:2px;}
+    .item-card .info .tag.soccer{background:rgba(46,125,50,.3);color:#81c784;}
+    .item-card .info .tag.reg{background:rgba(240,193,75,.3);color:#ffd54f;}
+    .item-card .info .tag.default{background:rgba(255,255,255,.08);color:var(--text-muted);}
+    .item-card .actions{display:flex;gap:3px;flex-shrink:0;}
+    .item-card .actions button{padding:2px 6px;border:none;border-radius:3px;font-size:var(--text-xs);font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;min-height:24px;}
+    .item-card .actions .btn-edit{background:rgba(96,165,250,.15);color:#60a5fa;}
+    .item-card .actions .btn-edit:hover{background:rgba(96,165,250,.25);}
+    .item-card .actions .btn-delete{background:rgba(231,76,60,.15);color:#e74c3c;}
+    .item-card .actions .btn-delete:hover{background:rgba(231,76,60,.25);}
+    
+    .table-wrap{overflow:auto;border:1px solid var(--border);border-radius:var(--radius);-webkit-overflow-scrolling:touch;}
+    table{width:100%;border-collapse:collapse;min-width:600px;}
+    th,td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--border);font-size:var(--text-xs);vertical-align:middle;}
+    th{background:rgba(255,255,255,.03);color:var(--primary);font-weight:700;font-size:var(--text-xs);text-transform:uppercase;letter-spacing:.5px;}
+    td{color:var(--text);word-break:break-word;}
+    td strong{color:#fff;}
+    .status-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:16px;font-size:var(--text-xs);font-weight:700;}
+    .status-badge.paid{color:var(--success);background:rgba(74,222,128,.12);}
+    .status-badge.pending{color:var(--warning);background:rgba(251,191,36,.12);}
+    .status-badge.unpaid{color:var(--danger);background:rgba(248,113,113,.12);}
+    .status-badge .dot{width:4px;height:4px;border-radius:50%;display:inline-block;}
+    .status-badge.paid .dot{background:var(--success);}
+    .status-badge.pending .dot{background:var(--warning);}
+    .status-badge.unpaid .dot{background:var(--danger);}
+    .invoice-actions{display:flex;gap:2px;flex-wrap:wrap;}
+    .invoice-actions button{padding:2px 6px;border:none;border-radius:3px;font-size:var(--text-xs);font-weight:700;cursor:pointer;transition:all .2s;font-family:inherit;min-height:24px;}
+    .invoice-actions .btn-view{background:rgba(96,165,250,.15);color:#60a5fa;}
+    .invoice-actions .btn-view:hover{background:rgba(96,165,250,.25);}
+    .invoice-actions .btn-paid{background:rgba(74,222,128,.15);color:var(--success);}
+    .invoice-actions .btn-paid:hover{background:rgba(74,222,128,.25);}
+    .invoice-actions .btn-delete{background:rgba(231,76,60,.15);color:#e74c3c;}
+    .invoice-actions .btn-delete:hover{background:rgba(231,76,60,.25);}
+    .accept-cell input[type="checkbox"]{width:14px;height:14px;cursor:pointer;accent-color:var(--success);}
+    .admin-toolbar{display:grid;grid-template-columns:1fr 140px;gap:8px;margin-bottom:10px;}
+    .admin-toolbar input,.admin-toolbar select{width:100%;height:32px;border:1px solid var(--border);border-radius:5px;padding:0 10px;background:rgba(255,255,255,.04);color:#fff;font-size:var(--text-xs);outline:none;font-family:inherit;}
+    .admin-toolbar input:focus,.admin-toolbar select:focus{border-color:var(--primary);}
+    .admin-toolbar select option{background:var(--bg);}
+    
+    .payment-method-item{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:5px;padding:8px 12px;display:flex;justify-content:space-between;align-items:center;transition:all .2s;margin-bottom:5px;gap:6px;flex-wrap:wrap;}
+    .payment-method-item:hover{background:rgba(255,255,255,.06);border-color:rgba(240,193,75,.2);}
+    .payment-method-item .info{flex:1;min-width:0;}
+    .payment-method-item .info .name{font-weight:600;font-size:var(--text-sm);color:#fff;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+    .payment-method-item .info .details{font-size:var(--text-xs);color:var(--text-muted);word-break:break-word;margin-top:2px;}
+    .payment-method-item .info .type-badge{display:inline-block;padding:1px 6px;border-radius:8px;font-size:var(--text-xs);font-weight:700;margin-top:2px;background:rgba(240,193,75,.15);color:var(--primary);}
+    .payment-method-item .info .type-badge.mpesa{background:rgba(46,204,113,.15);color:#2ecc71;}
+    .payment-method-item .info .type-badge.bank{background:rgba(96,165,250,.15);color:#60a5fa;}
+    .payment-method-item .info .type-badge.pochi{background:rgba(251,191,36,.15);color:#fbbf24;}
+    .payment-method-item .info .type-badge.till{background:rgba(192,132,252,.15);color:#a78bfa;}
+    .payment-method-item .info .status-badge-sm{display:inline-block;padding:1px 6px;border-radius:6px;font-size:var(--text-xs);font-weight:700;margin-left:3px;}
+    .payment-method-item .info .status-badge-sm.active{background:rgba(74,222,128,.15);color:#4ade80;}
+    .payment-method-item .info .status-badge-sm.inactive{background:rgba(248,113,113,.15);color:#f87171;}
+    .payment-method-item .info .payment-fields{font-size:var(--text-xs);color:var(--text-muted);margin-top:3px;padding:3px 6px;background:rgba(255,255,255,.05);border-radius:4px;border:1px solid var(--border);}
+    .payment-method-item .info .payment-fields strong{color:#fff;font-weight:600;}
+    .payment-method-item .actions .btn-view-only{background:rgba(255,255,255,.05);color:var(--text-muted);border:1px solid var(--border);padding:2px 6px;border-radius:4px;font-size:var(--text-xs);font-weight:600;cursor:default;font-family:inherit;flex-shrink:0;min-height:24px;}
+    
+    .settings-group{margin-bottom:12px;}
+    .settings-group h5{font-size:var(--text-sm);color:#fff;margin-bottom:5px;display:flex;align-items:center;gap:5px;}
+    .settings-group h5 i{color:var(--primary);}
+    .settings-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .settings-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+    
+    .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--secondary);color:#fff;padding:8px 16px;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);z-index:99999;font-size:var(--text-sm);font-weight:600;display:none;animation:slideUp .3s ease;max-width:90%;text-align:center;}
+    .toast.show{display:block;}
+    .toast.success{border-color:var(--success);}
+    .toast.error{border-color:var(--danger);}
+    @keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(20px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+    
+    .live-indicator{display:flex;align-items:center;gap:4px;font-size:var(--text-xs);color:var(--success);}
+    .live-indicator .pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 1.5s infinite;}
+    
+    .dsa-bridge-status{display:inline-flex;align-items:center;gap:3px;background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;border-radius:10px;padding:2px 6px;font-size:var(--text-xs);font-weight:700;}
+    .dsa-bridge-status .dsa-dot{display:inline-block;width:4px;height:4px;border-radius:50%;background:#16a34a;}
+    .dsa-bridge-status.offline{background:#fef2f2;color:#991b1b;border-color:#fca5a5;}
+    .dsa-bridge-status.offline .dsa-dot{background:#ef4444;}
+    
+    .admin-auth-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:9999999;background:rgba(0,0,0,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);padding:14px;}
+    .admin-auth-overlay.show{display:flex;}
+    .admin-auth-box{width:min(380px,92vw);background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px 20px;text-align:center;}
+    .admin-auth-box .lock-icon{width:44px;height:44px;border-radius:50%;background:rgba(240,193,75,.15);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:var(--text-xl);margin:0 auto 8px;}
+    .admin-auth-box h2{font-size:var(--text-base);color:#fff;margin-bottom:2px;}
+    .admin-auth-box p{font-size:var(--text-sm);color:var(--text-muted);margin-bottom:12px;}
+    .admin-auth-box form{width:100%;}
+    .admin-auth-box form input{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:5px;background:rgba(255,255,255,.05);color:#fff;font-size:var(--text-base);text-align:center;letter-spacing:8px;outline:none;font-family:inherit;autocomplete:new-password;min-height:44px;}
+    .admin-auth-box form input:focus{border-color:var(--primary);}
+    .admin-auth-box form input::placeholder{color:var(--text-muted);letter-spacing:2px;font-size:var(--text-sm);}
+    .admin-auth-box .auth-error{display:none;margin-top:6px;padding:5px;border-radius:5px;background:rgba(248,113,113,.12);color:#f87171;font-size:var(--text-xs);font-weight:600;border:1px solid rgba(248,113,113,.2);}
+    .admin-auth-box button{width:100%;margin-top:10px;padding:8px;border:none;border-radius:5px;background:var(--primary);color:var(--secondary);font-weight:700;font-size:var(--text-sm);cursor:pointer;font-family:inherit;transition:all .2s;min-height:44px;}
+    .admin-auth-box button:hover{transform:scale(1.02);}
+    
+    .hamburger{display:none;background:none;border:none;color:#fff;font-size:var(--text-base);cursor:pointer;padding:3px 6px;font-family:inherit;min-height:34px;}
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;}
+    .sidebar-overlay.show{display:block;}
+    
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:999999;align-items:center;justify-content:center;padding:14px;}
+    .modal-overlay.show{display:flex;}
+    .modal-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;width:min(560px,94vw);max-height:90vh;overflow-y:auto;}
+    .modal-box h3{color:#fff;font-size:var(--text-base);margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+    .modal-box h3 i{color:var(--primary);}
+    .modal-box .close-modal{float:right;background:none;border:none;color:var(--text-muted);font-size:var(--text-base);cursor:pointer;font-family:inherit;min-height:34px;}
+    .modal-box .close-modal:hover{color:#fff;}
+    .modal-box .form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .modal-box .form-row .full{grid-column:1/-1;}
+    .modal-box .form-actions{display:flex;gap:8px;margin-top:12px;justify-content:flex-end;flex-wrap:wrap;}
+    .modal-box .form-actions button{padding:6px 16px;border:none;border-radius:5px;font-size:var(--text-xs);font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;min-height:34px;}
+    .modal-box .form-actions .btn-submit{background:var(--primary);color:var(--secondary);}
+    .modal-box .form-actions .btn-submit:hover{transform:scale(1.04);}
+    .modal-box .form-actions .btn-cancel{background:rgba(255,255,255,.08);color:#fff;border:1px solid var(--border);}
+    .modal-box .form-actions .btn-cancel:hover{background:rgba(255,255,255,.15);}
+    .modal-box .editor-field label{font-size:var(--text-xs);}
+    .modal-box .editor-field input,.modal-box .editor-field select{font-size:var(--text-sm);padding:6px 10px;min-height:36px;}
+    
+    .social-preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;margin-top:10px;padding:10px;background:rgba(255,255,255,.03);border-radius:5px;border:1px solid var(--border);}
+    .social-preview .social-item{display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:4px;background:rgba(255,255,255,.05);font-size:var(--text-xs);color:var(--text-muted);}
+    .social-preview .social-item i{font-size:var(--text-sm);width:16px;text-align:center;}
+    .social-preview .social-item a{color:var(--text);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .social-preview .social-item a:hover{color:var(--primary);}
+    
+    .auto-id-hint{font-size:var(--text-xs);color:var(--text-muted);margin-top:2px;display:flex;align-items:center;gap:4px;}
+    .auto-id-hint i{color:var(--primary);font-size:var(--text-xs);}
+    
+    @media(max-width:768px){
+      .hamburger{display:block;}
+      .sidebar{position:fixed;left:-260px;top:0;width:260px;height:100vh;z-index:100;transition:left .3s ease;box-shadow:4px 0 30px rgba(0,0,0,.6);border-right:1px solid var(--border);}
+      .sidebar.open{left:0;}
+      .sidebar-overlay.show{display:block;}
+      .topbar{padding:6px 10px;min-height:46px;}
+      .topbar h2{font-size:var(--text-sm);}
+      .topbar-actions button{font-size:var(--text-xs);padding:3px 8px;min-height:30px;}
+      .content{padding:8px 10px 16px;}
+      .stats-grid{grid-template-columns:1fr 1fr;gap:6px;}
+      .stat-card{padding:8px 10px;}
+      .stat-card .value{font-size:var(--text-base);}
+      .table-wrap table{min-width:450px;}
+      th,td{padding:4px 6px;font-size:var(--text-xs);}
+      .modal-box .form-row{grid-template-columns:1fr;}
+      .modal-box .form-row .full{grid-column:1;}
+      .admin-toolbar{grid-template-columns:1fr;}
+      .settings-row{grid-template-columns:1fr;}
+      .editor-row{grid-template-columns:1fr;}
+      .topbar-left{width:100%;justify-content:space-between;}
+      .topbar-actions{width:100%;justify-content:flex-start;}
+    }
+    
+    @media(max-width:480px){
+      .stats-grid{grid-template-columns:1fr 1fr;gap:4px;}
+      .stat-card{padding:6px 8px;}
+      .stat-card .value{font-size:var(--text-sm);}
+      .welcome-card{padding:10px 12px;}
+      .welcome-card h3{font-size:var(--text-sm);}
+      .welcome-card .quick-actions{flex-direction:column;}
+      .welcome-card .quick-actions button{width:100%;justify-content:center;font-size:var(--text-xs);padding:5px 10px;min-height:34px;}
+      .table-wrap table{min-width:350px;}
+      th,td{font-size:var(--text-xs);padding:3px 4px;}
+      .payment-method-item{flex-direction:column;align-items:stretch;}
+      .payment-method-item .actions{text-align:right;}
+    }
+    
+    @media(min-width:769px){
+      .sidebar{position:sticky;left:0;width:220px;transform:none !important;box-shadow:none;}
+      .sidebar-overlay{display:none !important;}
+      .hamburger{display:none !important;}
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-auth-overlay" id="adminAuthOverlay">
+  <div class="admin-auth-box">
+    <div class="lock-icon"><i class="fas fa-lock"></i></div>
+    <h2>Administrator Access</h2>
+    <p>Enter the secure passcode to access the CMS.</p>
+    <form id="authForm" onsubmit="event.preventDefault(); verifyAuth();">
+      <input type="password" id="adminAuthPasscode" maxlength="4" placeholder="••••" inputmode="numeric" value="" autocomplete="new-password">
+      <input type="text" style="display:none;" autocomplete="username" value="admin">
+      <div class="auth-error" id="authError">Incorrect passcode. Please try again.</div>
+      <button type="button" id="authLoginBtn"><i class="fas fa-key"></i> UNLOCK CMS</button>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="memberModal">
+  <div class="modal-box">
+    <h3><i class="fas fa-user-plus"></i> Add New Member</h3>
+    <div class="form-row">
+      <div class="editor-field">
+        <label>Student ID <span style="color:var(--primary);font-weight:400;font-size:var(--text-xs);">(auto-generated)</span></label>
+        <input id="mStudentID" placeholder="Will be auto-generated" readonly style="background:rgba(255,255,255,.02);color:var(--text-muted);cursor:not-allowed;">
+        <div class="auto-id-hint"><i class="fas fa-info-circle"></i> ID will be generated when you save</div>
+      </div>
+      <div class="editor-field"><label>Full Name *</label><input id="mFullName" placeholder="Full name"></div>
+      <div class="editor-field"><label>ID Number</label><input id="mIdNumber" placeholder="National ID/Passport"></div>
+      <div class="editor-field"><label>Phone *</label><input id="mPhone" placeholder="0712 345 678"></div>
+      <div class="editor-field"><label>Email</label><input id="mEmail" placeholder="email@example.com"></div>
+      <div class="editor-field"><label>Gender</label>
+        <select id="mGender"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select>
+      </div>
+      <div class="editor-field"><label>Nationality</label><input id="mNationality" placeholder="Kenya"></div>
+      <div class="editor-field"><label>Role *</label>
+        <select id="mJoinAs"><option value="">Select</option><option>Player</option><option>Coach</option><option>Volunteer</option><option>Mentor</option><option>Staff</option><option>Other</option></select>
+      </div>
+      <div class="editor-field"><label>Sport</label><input id="mSport" placeholder="e.g., Soccer, Swimming"></div>
+      <div class="editor-field"><label>Experience Level</label>
+        <select id="mExperience"><option value="">Select</option><option>Beginner</option><option>Intermediate</option><option>Advanced</option><option>Professional</option></select>
+      </div>
+      <div class="editor-field"><label>County</label><input id="mCounty" placeholder="County"></div>
+      <div class="editor-field"><label>Constituency</label><input id="mConstituency" placeholder="Constituency"></div>
+      <div class="editor-field full"><label>Ward</label><input id="mWard" placeholder="Ward"></div>
+      <div class="editor-field full"><label>Parent/Guardian Name</label><input id="mParentName" placeholder="Parent/Guardian full name"></div>
+      <div class="editor-field"><label>Parent Relationship</label><input id="mParentRel" placeholder="e.g., Father, Mother, Guardian"></div>
+      <div class="editor-field"><label>Parent Phone</label><input id="mParentPhone" placeholder="Parent contact number"></div>
+      <div class="editor-field full"><label>Parent Email</label><input id="mParentEmail" placeholder="Parent email address"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn-cancel" onclick="closeMemberModal()"><i class="fas fa-times"></i> Cancel</button>
+      <button class="btn-submit" onclick="saveNewMember()"><i class="fas fa-save"></i> Add Member</button>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<aside class="sidebar" id="mainSidebar">
+  <div class="sidebar-brand">
+    <div class="logo"><i class="fas fa-futbol"></i></div>
+    <div>
+      <h1><span>DSA</span> CMS</h1>
+      <small>Professional Admin</small>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-label">Main</div>
+    <button class="nav-item active" data-page="dashboard"><i class="fas fa-th-large"></i><span>Dashboard</span></button>
+    <div class="nav-label">Business</div>
+    <button class="nav-item" data-page="members"><i class="fas fa-users"></i><span>Members</span><span class="badge" id="memberBadge">0</span></button>
+    <button class="nav-item" data-page="invoices"><i class="fas fa-file-invoice"></i><span>Invoices</span><span class="badge" id="invoiceBadge">0</span></button>
+    <button class="nav-item" data-page="programmes"><i class="fas fa-trophy"></i><span>Programmes</span></button>
+    <button class="nav-item" data-page="payments"><i class="fas fa-credit-card"></i><span>Payment Methods</span></button>
+    <div class="nav-label">System</div>
+    <button class="nav-item" data-page="settings"><i class="fas fa-cog"></i><span>Settings</span></button>
+    <button class="nav-item" data-page="backup"><i class="fas fa-database"></i><span>Backup</span></button>
+  </nav>
+  <div class="sidebar-footer">
+    <span><span class="status-dot"></span> Live</span>
+    <span id="versionDisplay">v4.1</span>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" onclick="toggleSidebar()" aria-label="Toggle menu"><i class="fas fa-bars"></i></button>
+      <h2 id="pageTitle"><i class="fas fa-th-large"></i> Dashboard</h2>
+      <span class="live-indicator"><span class="pulse-dot"></span> Live</span>
+      <span id="cmsConnectionStatus" class="dsa-bridge-status">
+        <span id="cmsStatusDot" class="dsa-dot"></span>
+        <span id="cmsStatusText">CONNECTED</span>
+      </span>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn-save" onclick="saveAll()"><i class="fas fa-save"></i> Save</button>
+      <button class="btn-export" onclick="exportData()"><i class="fas fa-download"></i> Export</button>
+      <button class="btn-save" onclick="openInvoiceSystem()" style="background:rgba(240,193,75,.15);color:var(--primary);"><i class="fas fa-file-invoice"></i> Invoices</button>
+      <button class="btn-save" onclick="openRegistration()" style="background:rgba(96,165,250,.15);color:#60a5fa;"><i class="fas fa-user-plus"></i> Register</button>
+      <button class="btn-save" onclick="logoutAdmin()" style="background:rgba(248,113,113,.15);color:#f87171;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </header>
+
+  <div class="content">
+    <div class="page active" id="page-dashboard">
+      <div class="welcome-card">
+        <h3><i class="fas fa-futbol" style="color:var(--primary);"></i> Welcome to DSA CMS v4.1</h3>
+        <p>Manage your academy's members, invoices, payment methods, and settings. All changes saved instantly.</p>
+        <div class="quick-actions">
+          <button class="qa-primary" onclick="navigateTo('members')"><i class="fas fa-users"></i> Members</button>
+          <button class="qa-primary" onclick="navigateTo('invoices')"><i class="fas fa-file-invoice"></i> Invoices</button>
+          <button class="qa-secondary" onclick="openInvoiceSystem()"><i class="fas fa-external-link-alt"></i> Invoice Admin</button>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><span class="label">Members</span><span class="value" id="statMembers">0</span><span class="icon"><i class="fas fa-users"></i></span></div>
+        <div class="stat-card"><span class="label">Invoices</span><span class="value" id="statInvoices">0</span><span class="icon"><i class="fas fa-file-invoice"></i></span></div>
+        <div class="stat-card"><span class="label">Programmes</span><span class="value" id="statProgrammes">0</span><span class="icon"><i class="fas fa-trophy"></i></span></div>
+        <div class="stat-card"><span class="label">Payments</span><span class="value" id="statPayments">0</span><span class="icon"><i class="fas fa-credit-card"></i></span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="editor-section"><h4 style="color:#fff;font-size:var(--text-sm);"><i class="fas fa-clock" style="color:var(--primary);"></i> Quick Stats</h4>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:5px;">
+            <div style="background:rgba(255,255,255,.03);padding:6px;border-radius:5px;text-align:center;"><span style="font-size:var(--text-xs);color:var(--text-muted);display:block;">Revenue</span><span style="font-size:var(--text-base);font-weight:800;color:var(--success);" id="totalRevenue">KSh 0</span></div>
+            <div style="background:rgba(255,255,255,.03);padding:6px;border-radius:5px;text-align:center;"><span style="font-size:var(--text-xs);color:var(--text-muted);display:block;">Members</span><span style="font-size:var(--text-base);font-weight:800;color:#fff;" id="totalMembers">0</span></div>
+          </div>
+          <div style="margin-top:6px;padding:5px 8px;background:rgba(74,222,128,.08);border-radius:5px;border:1px solid rgba(74,222,128,.15);">
+            <p style="font-size:var(--text-xs);color:var(--text-muted);"><i class="fas fa-link" style="color:var(--success);"></i> <strong style="color:#fff;">Status:</strong> <span id="dashPeerCount">0</span> connected</p>
+          </div>
+        </div>
+        <div class="editor-section"><h4 style="color:#fff;font-size:var(--text-sm);"><i class="fas fa-lightbulb" style="color:var(--primary);"></i> Quick Tips</h4>
+          <ul style="color:var(--text-muted);font-size:var(--text-xs);list-style:none;padding:0;margin-top:3px;">
+            <li style="padding:2px 0;">👥 View members in Members tab</li>
+            <li style="padding:2px 0;">💳 Payment methods in Invoice Admin</li>
+            <li style="padding:2px 0;">💾 Changes auto-save</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-members">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+        <h4 style="color:#fff;font-size:var(--text-sm);"><i class="fas fa-users" style="color:var(--primary);"></i> Member Management</h4>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <button onclick="exportMembers()" style="padding:4px 10px;border:none;border-radius:5px;background:rgba(46,204,113,.15);color:#2ecc71;font-size:var(--text-xs);font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;min-height:30px;"><i class="fas fa-download"></i> Export</button>
+          <button onclick="refreshMembers()" style="padding:4px 10px;border:none;border-radius:5px;background:rgba(96,165,250,.15);color:#60a5fa;font-size:var(--text-xs);font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;min-height:30px;"><i class="fas fa-sync"></i> Refresh</button>
+          <button onclick="openMemberModal()" style="padding:4px 10px;border:none;border-radius:5px;background:rgba(240,193,75,.15);color:var(--primary);font-size:var(--text-xs);font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;border:1px solid rgba(240,193,75,.2);min-height:30px;"><i class="fas fa-user-plus"></i> Add New</button>
+        </div>
+      </div>
+      <div class="stats-grid" style="margin-bottom:10px;">
+        <div class="stat-card"><span class="label">Total</span><span class="value" id="memTotal">0</span></div>
+        <div class="stat-card"><span class="label">Players</span><span class="value" id="memPlayers" style="color:#60a5fa;">0</span></div>
+        <div class="stat-card"><span class="label">Coaches</span><span class="value" id="memCoaches" style="color:var(--warning);">0</span></div>
+        <div class="stat-card"><span class="label">Others</span><span class="value" id="memOthers" style="color:var(--text-muted);">0</span></div>
+      </div>
+      <div class="admin-toolbar">
+        <input id="memberSearch" type="search" placeholder="Search members..." oninput="renderMembers()">
+        <select id="memberFilter" onchange="renderMembers()">
+          <option value="ALL">All Roles</option>
+          <option value="Player">Players</option>
+          <option value="Coach">Coaches</option>
+          <option value="Volunteer">Volunteers</option>
+          <option value="Mentor">Mentors</option>
+          <option value="Staff">Staff</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>ID</th><th>Name</th><th>Phone</th><th>Email</th><th>Role</th><th>Sport</th><th>Registered</th><th>Actions</th></tr></thead>
+          <tbody id="membersTableBody"></tbody>
+        </table>
+        <div id="memEmpty" style="padding:16px;text-align:center;color:var(--text-muted);font-size:var(--text-sm);">No members found.</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-invoices">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+        <h4 style="color:#fff;font-size:var(--text-sm);"><i class="fas fa-file-invoice" style="color:var(--primary);"></i> Invoice Management</h4>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <button onclick="openInvoiceSystem()" style="padding:5px 12px;border:none;border-radius:5px;background:rgba(240,193,75,.15);color:var(--primary);font-size:var(--text-xs);font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;border:1px solid rgba(240,193,75,.2);min-height:30px;">
+            <i class="fas fa-external-link-alt"></i> Full Admin
+          </button>
+        </div>
+      </div>
+      <div class="stats-grid" style="margin-bottom:10px;">
+        <div class="stat-card"><span class="label">Total</span><span class="value" id="invTotal">0</span></div>
+        <div class="stat-card"><span class="label">Paid</span><span class="value" id="invPaid" style="color:var(--success);">0</span></div>
+        <div class="stat-card"><span class="label">Pending</span><span class="value" id="invPending" style="color:var(--warning);">0</span></div>
+        <div class="stat-card"><span class="label">Unpaid</span><span class="value" id="invUnpaid" style="color:var(--danger);">0</span></div>
+      </div>
+      <div class="admin-toolbar">
+        <input id="invSearch" type="search" placeholder="Search invoices..." oninput="renderInvoices()">
+        <select id="invFilter" onchange="renderInvoices()">
+          <option value="ALL">All Statuses</option>
+          <option value="PAID">Paid</option>
+          <option value="PENDING VERIFICATION">Pending</option>
+          <option value="NOT YET PAID">Unpaid</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Invoice</th><th>Student</th><th>Program</th><th>Amount</th><th>Ref</th><th>Status</th><th>Date</th><th>✓</th><th>Actions</th></tr></thead>
+          <tbody id="invTableBody"></tbody>
+        </table>
+        <div id="invEmpty" style="padding:16px;text-align:center;color:var(--text-muted);font-size:var(--text-sm);">No invoices found.</div>
+      </div>
+    </div>
+
+    <div class="page" id="page-programmes">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+        <h4 style="color:#fff;font-size:var(--text-sm);"><i class="fas fa-trophy" style="color:var(--primary);"></i> Programme Management</h4>
+        <div style="display:flex;gap:4px;flex-wrap:wrap;">
+          <button onclick="addProgramme()" style="padding:4px 10px;border:none;border-radius:5px;background:rgba(46,204,113,.15);color:#2ecc71;font-size:var(--text-xs);font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;min-height:30px;"><i class="fas fa-plus"></i> Add</button>
+          <button onclick="resetDefaultProgrammes()" style="padding:4px 10px;border:none;border-radius:5px;background:rgba(251,191,36,.15);color:#fbbf24;font-size:var(--text-xs);font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;min-height:30px;"><i class="fas fa-undo"></i> Reset</button>
+        </div>
+      </div>
+      <div class="editor-section">
+        <div class="section-header">
+          <h4><i class="fas fa-list"></i> All Programmes</h4>
+          <div class="actions">
+            <span style="font-size:var(--text-xs);color:var(--text-muted);">Used for invoices</span>
+          </div>
+        </div>
+        <div id="programmesList"></div>
+      </div>
+    </div>
+
+    <div class="page" id="page-payments">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+        <h4 style="color:#fff;font-size:var(--text-sm);"><i class="fas fa-credit-card" style="color:var(--primary);"></i> Payment Methods <span style="font-size:var(--text-xs);color:var(--text-muted);font-weight:400;">(Read Only)</span></h4>
+        <button onclick="openInvoiceSystem()" style="padding:4px 10px;border:none;border-radius:5px;background:rgba(240,193,75,.15);color:var(--primary);font-size:var(--text-xs);font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;border:1px solid rgba(240,193,75,.2);min-height:30px;">
+          <i class="fas fa-external-link-alt"></i> Edit
+        </button>
+      </div>
+      <div class="editor-section">
+        <div class="section-header">
+          <h4><i class="fas fa-list"></i> Configured Methods</h4>
+          <div class="actions">
+            <span style="font-size:var(--text-xs);color:var(--text-muted);">Manage in Invoice Admin</span>
+          </div>
+        </div>
+        <div id="paymentMethodsList"></div>
+        <div style="margin-top:8px;padding:5px 8px;background:rgba(251,191,36,.08);border-radius:5px;border:1px solid rgba(251,191,36,.15);">
+          <p style="font-size:var(--text-xs);color:var(--text-muted);"><i class="fas fa-info-circle" style="color:var(--warning);"></i> Manage in <strong style="color:#fff;">Invoice Admin</strong> → Payment Methods</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-settings">
+      <h4 style="color:#fff;font-size:var(--text-sm);margin-bottom:10px;"><i class="fas fa-cog" style="color:var(--primary);"></i> Site Settings</h4>
+      <div class="editor-section">
+        <div class="settings-group">
+          <h5><i class="fas fa-globe"></i> General</h5>
+          <div class="settings-row">
+            <div class="editor-field"><label>Site Name</label><input id="setSiteName" value="Difathar Soccer Academy"></div>
+            <div class="editor-field"><label>Tagline</label><input id="setTagline" value="Developing Future Champions Through Sport"></div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <h5><i class="fas fa-palette"></i> Branding</h5>
+          <div class="settings-row">
+            <div class="editor-field"><label>Primary Color</label><input id="setPrimaryColor" type="color" value="#f0c14b" style="height:34px;padding:3px;"></div>
+            <div class="editor-field"><label>Secondary Color</label><input id="setSecondaryColor" type="color" value="#071526" style="height:34px;padding:3px;"></div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <h5><i class="fas fa-address-card"></i> Contact</h5>
+          <div class="settings-row">
+            <div class="editor-field"><label>Location</label><input id="setLocation" value="Kangaru DEB, Manyatta Constituency, Embu County, Kenya"></div>
+            <div class="editor-field"><label>Phone</label><input id="setPhone" value="0722 650 030"></div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <h5><i class="fas fa-share-alt"></i> Social Media</h5>
+          <div class="settings-row">
+            <div class="editor-field"><label>WhatsApp</label><input id="setWhatsApp" value="https://wa.me/254722650030"></div>
+            <div class="editor-field"><label>Facebook</label><input id="setFacebook" value="https://www.facebook.com/share/18rLcUZn2s/?mibextid=wwXIfr"></div>
+            <div class="editor-field"><label>Instagram</label><input id="setInstagram" value="https://www.instagram.com/difatharsportsacademy"></div>
+            <div class="editor-field"><label>TikTok</label><input id="setTikTok" value="https://www.tiktok.com/@difatharsports"></div>
+          </div>
+          <div class="settings-row" style="margin-top:6px;">
+            <div class="editor-field"><label>YouTube</label><input id="setYouTube" value="https://www.youtube.com/@difatharsports"></div>
+            <div class="editor-field"><label>Telegram</label><input id="setTelegram" value="https://t.me/difathar"></div>
+          </div>
+          <div class="settings-row" style="margin-top:6px;">
+            <div class="editor-field"><label>Twitter/X</label><input id="setTwitter" value="https://twitter.com/difathar"></div>
+            <div class="editor-field"><label>LinkedIn</label><input id="setLinkedIn" value="https://linkedin.com/company/difathar"></div>
+          </div>
+          <div style="margin-top:6px;padding:4px 8px;background:rgba(74,222,128,.08);border-radius:5px;border:1px solid rgba(74,222,128,.15);">
+            <p style="font-size:var(--text-xs);color:var(--text-muted);"><i class="fas fa-link" style="color:var(--success);"></i> Changes here automatically update the main website social links.</p>
+          </div>
+          
+          <div class="social-preview" id="socialPreview">
+            <div class="social-item"><i class="fab fa-whatsapp" style="color:#25D366;"></i> <a href="#" id="previewWhatsApp" target="_blank">WhatsApp</a></div>
+            <div class="social-item"><i class="fab fa-facebook" style="color:#1877F2;"></i> <a href="#" id="previewFacebook" target="_blank">Facebook</a></div>
+            <div class="social-item"><i class="fab fa-instagram" style="color:#E4405F;"></i> <a href="#" id="previewInstagram" target="_blank">Instagram</a></div>
+            <div class="social-item"><i class="fab fa-tiktok" style="color:#010101;"></i> <a href="#" id="previewTikTok" target="_blank">TikTok</a></div>
+            <div class="social-item"><i class="fab fa-youtube" style="color:#FF0000;"></i> <a href="#" id="previewYouTube" target="_blank">YouTube</a></div>
+            <div class="social-item"><i class="fab fa-telegram" style="color:#26A5E4;"></i> <a href="#" id="previewTelegram" target="_blank">Telegram</a></div>
+            <div class="social-item"><i class="fab fa-x-twitter" style="color:#000;"></i> <a href="#" id="previewTwitter" target="_blank">Twitter/X</a></div>
+            <div class="social-item"><i class="fab fa-linkedin" style="color:#0A66C2;"></i> <a href="#" id="previewLinkedIn" target="_blank">LinkedIn</a></div>
+          </div>
+        </div>
+        <button onclick="saveSettings()" style="padding:6px 16px;border:none;border-radius:5px;background:var(--primary);color:var(--secondary);font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:4px;font-size:var(--text-xs);min-height:34px;"><i class="fas fa-save"></i> Save Settings to Supabase</button>
+        <div style="margin-top:6px;padding:6px 8px;background:rgba(74,222,128,.08);border-radius:5px;border:1px solid rgba(74,222,128,.15);">
+          <p style="font-size:var(--text-xs);color:var(--text-muted);"><i class="fas fa-check-circle" style="color:var(--success);"></i> <strong style="color:#fff;">Fixed:</strong> Settings now use the correct column-based schema.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page" id="page-backup">
+      <h4 style="color:#fff;font-size:var(--text-sm);margin-bottom:10px;"><i class="fas fa-database" style="color:var(--primary);"></i> Backup & Restore</h4>
+      <div class="editor-section" style="text-align:center;padding:24px 16px;">
+        <i class="fas fa-database" style="font-size:var(--text-xl);color:var(--primary);margin-bottom:10px;display:block;"></i>
+        <p style="color:var(--text-muted);font-size:var(--text-sm);max-width:500px;margin:0 auto 12px;">Export all your data as a JSON file for backup, or import a previously exported backup to restore your content.</p>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <button onclick="exportData()" style="padding:6px 14px;border:none;border-radius:5px;background:var(--primary);color:var(--secondary);font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;font-size:var(--text-xs);min-height:34px;"><i class="fas fa-download"></i> Export Backup</button>
+          <button onclick="document.getElementById('importFile').click()" style="padding:6px 14px;border:none;border-radius:5px;background:rgba(96,165,250,.15);color:#60a5fa;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;border:1px solid rgba(96,165,250,.2);font-size:var(--text-xs);min-height:34px;"><i class="fas fa-upload"></i> Import Backup</button>
+          <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importData(event)">
+          <button onclick="resetAll()" style="padding:6px 14px;border:none;border-radius:5px;background:rgba(231,76,60,.15);color:#e74c3c;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;border:1px solid rgba(231,76,60,.2);font-size:var(--text-xs);min-height:34px;"><i class="fas fa-undo"></i> Reset Default</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- DSA Bridge -->
+<script src="dsa-bridge.js"></script>
+
+<script>
+// ============================================
+// SAFE STORAGE ACCESS
+// ============================================
+function getSafeStorage() {
+    try {
+        var testKey = '__dsa_test__';
+        localStorage.setItem(testKey, 'test');
+        localStorage.removeItem(testKey);
+        return {
+            getItem: function(key) { return localStorage.getItem(key); },
+            setItem: function(key, value) { localStorage.setItem(key, value); },
+            removeItem: function(key) { localStorage.removeItem(key); },
+            isAvailable: true
+        };
+    } catch(e) {
+        console.warn('⚠️ localStorage blocked, using memory fallback');
+        var memory = {};
+        return {
+            getItem: function(key) { return memory[key] || null; },
+            setItem: function(key, value) { memory[key] = value; },
+            removeItem: function(key) { delete memory[key]; },
+            isAvailable: false
+        };
+    }
+}
+
+var storage = getSafeStorage();
+
+// ============================================
+// SUPABASE CONFIGURATION
+// ============================================
+var SUPABASE_URL = 'https://fyvzwhatiwspfcybpafn.supabase.co';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5dnp3aGF0aXdzcGZjeWJwYWZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzMzEyMzIsImV4cCI6MjEwMzkwNzIzMn0.yB9j5A2MpdoLUPDvVec3ZtzcgdvQGDGgGM2yzdz2MWA';
+
+var supabaseClient = null;
+var isSupabaseConnected = false;
+var supabaseInitialized = false;
+
+// ============================================
+// SHARED STATUS CONSTANTS
+// ============================================
+var STATUS = {
+    PAID: 'PAID',
+    PENDING: 'PENDING VERIFICATION',
+    UNPAID: 'NOT YET PAID'
+};
+
+// ============================================
+// DATA STORES
+// ============================================
+var members = [];
+var invoices = [];
+var programmes = [];
+var paymentMethods = [];
+var settings = {};
+
+// ============================================
+// TOAST NOTIFICATION
+// ============================================
+function showToast(msg, type) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast show ' + (type || 'success');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function() { t.className = 'toast'; }, 3000);
+}
+window.showToast = showToast;
+
+// ============================================
+// GENERATE UUID v4
+// ============================================
+function generateUUID() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0;
+        var v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+    });
+}
+window.generateUUID = generateUUID;
+
+// ============================================
+// AUTO-GENERATE STUDENT ID (DSA-YYYY-NNNN)
+// ============================================
+function generateStudentId() {
+    var year = new Date().getFullYear();
+    var existingIds = members
+        .filter(function(m) { 
+            return m.student_id && m.student_id.startsWith('DSA-' + year); 
+        })
+        .map(function(m) {
+            var parts = m.student_id.split('-');
+            return parts.length === 3 ? parseInt(parts[2]) : 0;
+        })
+        .filter(function(num) { return !isNaN(num); });
+    
+    var maxNum = 0;
+    if (existingIds.length > 0) {
+        maxNum = Math.max.apply(null, existingIds);
+    }
+    var nextNum = maxNum + 1;
+    var paddedNum = String(nextNum).padStart(4, '0');
+    return 'DSA-' + year + '-' + paddedNum;
+}
+window.generateStudentId = generateStudentId;
+
+// ============================================
+// INITIALIZE SUPABASE
+// ============================================
+function initSupabase() {
+    if (supabaseInitialized) {
+        console.log('✅ Supabase already initialized, reusing client');
+        return;
+    }
+    
+    try {
+        var supabaseLib = null;
+        
+        if (typeof supabaseJs !== 'undefined' && supabaseJs) {
+            supabaseLib = supabaseJs;
+        } else if (typeof window.supabase !== 'undefined' && window.supabase) {
+            supabaseLib = window.supabase;
+        }
+        
+        if (supabaseLib && supabaseLib.createClient) {
+            var createClient = supabaseLib.createClient;
+            supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            supabaseInitialized = true;
+            console.log('✅ Supabase client initialized for CMS');
+            testSupabaseConnection();
+            setupRealtime();
+        } else {
+            console.warn('⚠️ Supabase JS not available, using localStorage only');
+            updateConnectionStatus(false);
+            loadAllDataFallback();
+        }
+    } catch(e) {
+        console.warn('⚠️ Supabase init failed:', e.message);
+        updateConnectionStatus(false);
+        loadAllDataFallback();
+    }
+}
+
+async function testSupabaseConnection() {
+    if (!supabaseClient) return;
+    try {
+        var result = await supabaseClient
+            .from('programmes')
+            .select('count')
+            .limit(1);
+        isSupabaseConnected = !result.error;
+        if (isSupabaseConnected) {
+            console.log('✅ Supabase connected successfully');
+            updateConnectionStatus(true);
+            await loadAllData();
+        } else {
+            console.warn('⚠️ Supabase connection failed:', result.error?.message);
+            updateConnectionStatus(false);
+            loadAllDataFallback();
+        }
+    } catch(e) {
+        console.warn('⚠️ Supabase connection error:', e.message);
+        isSupabaseConnected = false;
+        updateConnectionStatus(false);
+        loadAllDataFallback();
+    }
+}
+
+function updateConnectionStatus(connected) {
+    var statusDot = document.getElementById('cmsStatusDot');
+    var statusText = document.getElementById('cmsStatusText');
+    var statusContainer = document.getElementById('cmsConnectionStatus');
+    if (connected) {
+        statusDot.style.background = '#16a34a';
+        statusText.textContent = 'CONNECTED';
+        statusContainer.className = 'dsa-bridge-status';
+    } else {
+        statusDot.style.background = '#ef4444';
+        statusText.textContent = 'OFFLINE (Using Cache)';
+        statusContainer.className = 'dsa-bridge-status offline';
+    }
+}
+
+// ============================================
+// REAL-TIME SUBSCRIPTIONS
+// ============================================
+function setupRealtime() {
+    if (!supabaseClient) return;
+    
+    try {
+        if (navigator.onLine === false) {
+            console.log('📴 Offline, skipping realtime subscriptions');
+            return;
+        }
+    } catch(e) {}
+
+    var tables = ['members', 'invoices', 'programmes', 'payment_methods', 'settings'];
+    
+    tables.forEach(function(table) {
+        try {
+            var channel = supabaseClient
+                .channel('cms_' + table)
+                .on('postgres_changes', 
+                    { event: '*', schema: 'public', table: table },
+                    function(payload) {
+                        console.log('🔄 CMS Real-time: ' + table + ' ' + payload.eventType);
+                        refreshData(table);
+                    }
+                )
+                .subscribe(function(status, err) {
+                    if (status === 'CHANNEL_ERROR' || status === 'CLOSED') {
+                        if (err && err.message) {
+                            if (!window._realtimeErrors) window._realtimeErrors = {};
+                            if (!window._realtimeErrors[table]) {
+                                window._realtimeErrors[table] = true;
+                                console.log('ℹ️ Realtime disabled for ' + table + ' (WebSocket unavailable)');
+                            }
+                        }
+                    } else if (status === 'SUBSCRIBED') {
+                        console.log('✅ Realtime subscribed for ' + table);
+                    }
+                });
+        } catch(e) {}
+    });
+}
+
+function refreshData(table) {
+    switch(table) {
+        case 'members':
+            loadMembers().then(function() { renderMembers(); updateStats(); });
+            break;
+        case 'invoices':
+            loadInvoices().then(function() { renderInvoices(); updateStats(); });
+            break;
+        case 'programmes':
+            loadProgrammes().then(function() { renderProgrammesList(); updateStats(); });
+            break;
+        case 'payment_methods':
+            loadPaymentMethods().then(function() { renderPaymentMethodsList(); updateStats(); });
+            break;
+        case 'settings':
+            loadSettingsFromSupabase();
+            break;
+    }
+}
+
+// ============================================
+// DATA LOADING FUNCTIONS
+// ============================================
+async function loadAllData() {
+    try {
+        await Promise.all([
+            loadMembers(),
+            loadInvoices(),
+            loadProgrammes(),
+            loadPaymentMethods(),
+            loadSettingsFromSupabase()
+        ]);
+        updateStats();
+        renderMembers();
+        renderInvoices();
+        renderProgrammesList();
+        renderPaymentMethodsList();
+        updateSocialPreview();
+        showToast('🔄 Data loaded from Supabase');
+    } catch(e) {
+        console.warn('⚠️ Load all data failed:', e.message);
+        loadAllDataFallback();
+    }
+}
+
+function loadAllDataFallback() {
+    loadMembersLocal();
+    loadInvoicesLocal();
+    loadProgrammesLocal();
+    loadPaymentMethodsLocal();
+    loadSettingsLocal();
+    updateStats();
+    renderMembers();
+    renderInvoices();
+    renderProgrammesList();
+    renderPaymentMethodsList();
+    updateSocialPreview();
+    showToast('⚠️ Using cached data (offline mode)');
+}
+
+// ============================================
+// SETTINGS FUNCTIONS
+// ============================================
+function getDefaultSettings() {
+    return {
+        siteName: 'Difathar Soccer Academy',
+        tagline: 'Developing Future Champions Through Sport',
+        primaryColor: '#f0c14b',
+        secondaryColor: '#071526',
+        location: 'Kangaru DEB, Manyatta Constituency, Embu County, Kenya',
+        email: 'difatharsocceracademy@gmail.com',
+        phone: '0722 650 030',
+        whatsapp: 'https://wa.me/254722650030',
+        facebook: 'https://www.facebook.com/share/18rLcUZn2s/?mibextid=wwXIfr',
+        instagram: 'https://www.instagram.com/difatharsportsacademy',
+        tiktok: 'https://www.tiktok.com/@difatharsports',
+        youtube: 'https://www.youtube.com/@difatharsports',
+        telegram: 'https://t.me/difathar',
+        twitter: 'https://twitter.com/difathar',
+        linkedin: 'https://linkedin.com/company/difathar'
+    };
+}
+
+function loadSettingsLocal() {
+    try {
+        var stored = storage.getItem('dsa_settings_cache');
+        if (stored) {
+            settings = JSON.parse(stored);
+        } else {
+            settings = getDefaultSettings();
+        }
+    } catch(e) {
+        settings = getDefaultSettings();
+    }
+    return settings;
+}
+
+function saveSettingsToCache() {
+    storage.setItem('dsa_settings_cache', JSON.stringify(settings));
+}
+
+async function loadSettingsFromSupabase() {
+    if (!supabaseClient || !isSupabaseConnected) {
+        loadSettingsLocal();
+        updateSettingsForm();
+        updateSocialPreview();
+        return;
+    }
+    
+    try {
+        console.log('🔄 Loading settings from Supabase...');
+        
+        var result = await supabaseClient
+            .from('settings')
+            .select('*')
+            .limit(1);
+            
+        if (result.error) {
+            console.warn('⚠️ Error loading settings:', result.error);
+            loadSettingsLocal();
+            updateSettingsForm();
+            updateSocialPreview();
+            return;
+        }
+        
+        if (result.data && result.data.length > 0) {
+            var supabaseSettings = result.data[0];
+            console.log('📋 Settings loaded from Supabase');
+            
+            var fieldMap = {
+                site_name: 'siteName',
+                tagline: 'tagline',
+                primary_color: 'primaryColor',
+                secondary_color: 'secondaryColor',
+                location: 'location',
+                email: 'email',
+                phone: 'phone',
+                whatsapp: 'whatsapp',
+                facebook: 'facebook',
+                instagram: 'instagram',
+                tiktok: 'tiktok',
+                youtube: 'youtube',
+                telegram: 'telegram',
+                twitter: 'twitter',
+                linkedin: 'linkedin'
+            };
+            
+            for (var dbKey in fieldMap) {
+                if (supabaseSettings[dbKey] !== undefined) {
+                    settings[fieldMap[dbKey]] = supabaseSettings[dbKey];
+                }
+            }
+            
+            storage.setItem('dsa_settings_cache', JSON.stringify(settings));
+            updateSettingsForm();
+            updateSocialPreview();
+            console.log('✅ Settings loaded from Supabase');
+        } else {
+            console.log('ℹ️ No settings found in Supabase, saving defaults...');
+            await saveSettingsToSupabase();
+        }
+    } catch(e) {
+        console.warn('⚠️ Load settings from Supabase failed:', e.message);
+        loadSettingsLocal();
+        updateSettingsForm();
+        updateSocialPreview();
+    }
+}
+
+async function saveSettingsToSupabase() {
+    saveSettingsToCache();
+    updateSocialPreview();
+    
+    if (!supabaseClient || !isSupabaseConnected) {
+        showToast('✅ Settings saved locally (offline mode)');
+        return;
+    }
+
+    try {
+        var dataToSave = {
+            site_name: settings.siteName || '',
+            tagline: settings.tagline || '',
+            primary_color: settings.primaryColor || '',
+            secondary_color: settings.secondaryColor || '',
+            location: settings.location || '',
+            email: settings.email || '',
+            phone: settings.phone || '',
+            whatsapp: settings.whatsapp || '',
+            facebook: settings.facebook || '',
+            instagram: settings.instagram || '',
+            tiktok: settings.tiktok || '',
+            youtube: settings.youtube || '',
+            telegram: settings.telegram || '',
+            twitter: settings.twitter || '',
+            linkedin: settings.linkedin || ''
+        };
+        
+        console.log('💾 Saving settings to Supabase:', dataToSave);
+        
+        var result = await supabaseClient
+            .from('settings')
+            .select('id')
+            .limit(1);
+        
+        if (result.error) {
+            var insertResult = await supabaseClient
+                .from('settings')
+                .insert(dataToSave);
+                
+            if (insertResult.error) {
+                console.error('❌ Insert error:', insertResult.error);
+                showToast('⚠️ Could not save to Supabase: ' + insertResult.error.message, 'error');
+            } else {
+                console.log('✅ Settings inserted into Supabase');
+                showToast('✅ Settings saved to Supabase!');
+            }
+            return;
+        }
+        
+        if (result.data && result.data.length > 0) {
+            var id = result.data[0].id;
+            var updateResult = await supabaseClient
+                .from('settings')
+                .update(dataToSave)
+                .eq('id', id);
+                
+            if (updateResult.error) {
+                console.error('❌ Update error:', updateResult.error);
+                showToast('⚠️ Could not update settings: ' + updateResult.error.message, 'error');
+            } else {
+                console.log('✅ Settings updated in Supabase');
+                showToast('✅ Settings saved to Supabase!');
+            }
+        } else {
+            var insertResult2 = await supabaseClient
+                .from('settings')
+                .insert(dataToSave);
+                
+            if (insertResult2.error) {
+                console.error('❌ Insert error:', insertResult2.error);
+                showToast('⚠️ Could not save to Supabase: ' + insertResult2.error.message, 'error');
+            } else {
+                console.log('✅ Settings inserted into Supabase');
+                showToast('✅ Settings saved to Supabase!');
+            }
+        }
+    } catch(e) {
+        console.warn('⚠️ Save settings to Supabase failed:', e.message);
+        showToast('⚠️ Saved locally only. Supabase error: ' + e.message, 'error');
+    }
+}
+
+function updateSettingsForm() {
+    var fieldMap = {
+        setSiteName: 'siteName',
+        setTagline: 'tagline',
+        setPrimaryColor: 'primaryColor',
+        setSecondaryColor: 'secondaryColor',
+        setLocation: 'location',
+        setEmail: 'email',
+        setPhone: 'phone',
+        setWhatsApp: 'whatsapp',
+        setFacebook: 'facebook',
+        setInstagram: 'instagram',
+        setTikTok: 'tiktok',
+        setYouTube: 'youtube',
+        setTelegram: 'telegram',
+        setTwitter: 'twitter',
+        setLinkedIn: 'linkedin'
+    };
+    
+    for (var elId in fieldMap) {
+        var el = document.getElementById(elId);
+        if (el && settings[fieldMap[elId]] !== undefined) {
+            el.value = settings[fieldMap[elId]] || '';
+        }
+    }
+}
+
+function updateSocialPreview() {
+    var socialLinks = {
+        whatsapp: 'previewWhatsApp',
+        facebook: 'previewFacebook',
+        instagram: 'previewInstagram',
+        tiktok: 'previewTikTok',
+        youtube: 'previewYouTube',
+        telegram: 'previewTelegram',
+        twitter: 'previewTwitter',
+        linkedin: 'previewLinkedIn'
+    };
+    for (var key in socialLinks) {
+        var el = document.getElementById(socialLinks[key]);
+        if (el && settings[key]) {
+            el.href = settings[key];
+        }
+    }
+}
+
+function saveSettings() {
+    var fieldMap = {
+        setSiteName: 'siteName',
+        setTagline: 'tagline',
+        setPrimaryColor: 'primaryColor',
+        setSecondaryColor: 'secondaryColor',
+        setLocation: 'location',
+        setEmail: 'email',
+        setPhone: 'phone',
+        setWhatsApp: 'whatsapp',
+        setFacebook: 'facebook',
+        setInstagram: 'instagram',
+        setTikTok: 'tiktok',
+        setYouTube: 'youtube',
+        setTelegram: 'telegram',
+        setTwitter: 'twitter',
+        setLinkedIn: 'linkedin'
+    };
+    
+    for (var elId in fieldMap) {
+        var el = document.getElementById(elId);
+        if (el) {
+            settings[fieldMap[elId]] = el.value || '';
+        }
+    }
+    
+    saveSettingsToSupabase();
+}
+window.saveSettings = saveSettings;
+
+// ============================================
+// MEMBERS FUNCTIONS
+// ============================================
+async function loadMembers() {
+    try {
+        if (supabaseClient && isSupabaseConnected) {
+            var result = await supabaseClient
+                .from('members')
+                .select('*')
+                .order('registered_at', { ascending: false });
+            if (!result.error && result.data) {
+                members = result.data;
+                storage.setItem('dsa_members_cache', JSON.stringify(members));
+                updateMemberBadge();
+                return members;
+            }
+        }
+        return loadMembersLocal();
+    } catch(e) {
+        console.warn('⚠️ Load members failed:', e.message);
+        return loadMembersLocal();
+    }
+}
+
+function loadMembersLocal() {
+    try {
+        var stored = storage.getItem('dsa_members_cache');
+        members = stored ? JSON.parse(stored) : [];
+        if (members.length === 0) {
+            var legacy = storage.getItem('difathar_registration_records');
+            if (legacy) {
+                members = JSON.parse(legacy);
+                storage.setItem('dsa_members_cache', JSON.stringify(members));
+            }
+        }
+    } catch(e) {
+        members = [];
+    }
+    updateMemberBadge();
+    return members;
+}
+
+function updateMemberBadge() {
+    var badge = document.getElementById('memberBadge');
+    if (badge) badge.textContent = members.length;
+}
+
+async function saveMemberToSupabase(member) {
+    if (!supabaseClient || !isSupabaseConnected) {
+        members.push(member);
+        storage.setItem('dsa_members_cache', JSON.stringify(members));
+        storage.setItem('difathar_registration_records', JSON.stringify(members));
+        return member;
+    }
+
+    try {
+        var result = await supabaseClient
+            .from('members')
+            .insert(member)
+            .select()
+            .single();
+        if (!result.error && result.data) {
+            var index = members.findIndex(function(m) { return m.student_id === result.data.student_id; });
+            if (index !== -1) {
+                members[index] = result.data;
+            } else {
+                members.push(result.data);
+            }
+            storage.setItem('dsa_members_cache', JSON.stringify(members));
+            
+            if (window.dsaBridge) {
+                window.dsaBridge.emitMember({
+                    student_id: result.data.student_id,
+                    action: 'added',
+                    full_name: result.data.full_name
+                });
+            }
+            
+            return result.data;
+        }
+        throw result.error;
+    } catch(e) {
+        console.warn('⚠️ Save member to Supabase failed:', e.message);
+        members.push(member);
+        storage.setItem('dsa_members_cache', JSON.stringify(members));
+        storage.setItem('difathar_registration_records', JSON.stringify(members));
+        return member;
+    }
+}
+
+async function deleteMemberFromSupabase(studentId) {
+    members = members.filter(function(m) { return m.student_id !== studentId; });
+    storage.setItem('dsa_members_cache', JSON.stringify(members));
+    storage.setItem('difathar_registration_records', JSON.stringify(members));
+    
+    if (supabaseClient && isSupabaseConnected) {
+        try {
+            var result = await supabaseClient
+                .from('members')
+                .delete()
+                .eq('student_id', studentId);
+                
+            if (result.error) {
+                console.error('❌ Supabase delete error:', result.error);
+                showToast('⚠️ Deleted locally only. Supabase error.', 'error');
+                return true;
+            }
+            
+            console.log('✅ Member ' + studentId + ' deleted from Supabase successfully');
+            showToast('✅ Member deleted from both local and Supabase');
+            
+            if (window.dsaBridge) {
+                window.dsaBridge.emitMember({
+                    student_id: studentId,
+                    action: 'deleted'
+                });
+            }
+            
+            return true;
+            
+        } catch(e) {
+            console.error('❌ Exception during Supabase delete:', e);
+            showToast('⚠️ Deleted locally only. Supabase connection error.', 'error');
+            return true;
+        }
+    } else {
+        showToast('🗑️ Member deleted (local cache only)');
+        return true;
+    }
+}
+
+// ============================================
+// INVOICES FUNCTIONS
+// ============================================
+async function loadInvoices() {
+    try {
+        if (supabaseClient && isSupabaseConnected) {
+            var result = await supabaseClient
+                .from('invoices')
+                .select('*')
+                .order('created_at', { ascending: false });
+            if (!result.error && result.data) {
+                invoices = result.data;
+                storage.setItem('dsa_invoices_cache', JSON.stringify(invoices));
+                updateInvoiceBadge();
+                return invoices;
+            }
+        }
+        return loadInvoicesLocal();
+    } catch(e) {
+        console.warn('⚠️ Load invoices failed:', e.message);
+        return loadInvoicesLocal();
+    }
+}
+
+function loadInvoicesLocal() {
+    try {
+        var stored = storage.getItem('dsa_invoices_cache');
+        invoices = stored ? JSON.parse(stored) : [];
+        if (invoices.length === 0) {
+            var legacy = storage.getItem('difathar_invoice_records_v1');
+            if (legacy) {
+                invoices = JSON.parse(legacy);
+                storage.setItem('dsa_invoices_cache', JSON.stringify(invoices));
+            }
+        }
+    } catch(e) {
+        invoices = [];
+    }
+    updateInvoiceBadge();
+    return invoices;
+}
+
+function updateInvoiceBadge() {
+    var badge = document.getElementById('invoiceBadge');
+    if (badge) badge.textContent = invoices.length;
+}
+
+async function updateInvoiceInSupabase(invoiceNo, updates) {
+    if (!supabaseClient || !isSupabaseConnected) {
+        var index = invoices.findIndex(function(i) { return i.invoice_no === invoiceNo; });
+        if (index !== -1) {
+            invoices[index] = Object.assign({}, invoices[index], updates);
+            storage.setItem('dsa_invoices_cache', JSON.stringify(invoices));
+            storage.setItem('difathar_invoice_records_v1', JSON.stringify(invoices));
+        }
+        return invoices[index];
+    }
+
+    try {
+        var result = await supabaseClient
+            .from('invoices')
+            .update(updates)
+            .eq('invoice_no', invoiceNo)
+            .select()
+            .single();
+        if (!result.error && result.data) {
+            var index = invoices.findIndex(function(i) { return i.invoice_no === invoiceNo; });
+            if (index !== -1) {
+                invoices[index] = result.data;
+            } else {
+                invoices.push(result.data);
+            }
+            storage.setItem('dsa_invoices_cache', JSON.stringify(invoices));
+            storage.setItem('difathar_invoice_records_v1', JSON.stringify(invoices));
+            
+            if (window.dsaBridge) {
+                window.dsaBridge.emitInvoice({
+                    invoice_no: invoiceNo,
+                    updates: updates
+                });
+            }
+            
+            return result.data;
+        }
+        throw result.error;
+    } catch(e) {
+        console.warn('⚠️ Update invoice in Supabase failed:', e.message);
+        var index = invoices.findIndex(function(i) { return i.invoice_no === invoiceNo; });
+        if (index !== -1) {
+            invoices[index] = Object.assign({}, invoices[index], updates);
+            storage.setItem('dsa_invoices_cache', JSON.stringify(invoices));
+            storage.setItem('difathar_invoice_records_v1', JSON.stringify(invoices));
+        }
+        return invoices[index];
+    }
+}
+
+async function deleteInvoiceFromSupabase(invoiceNo) {
+    if (!supabaseClient || !isSupabaseConnected) {
+        invoices = invoices.filter(function(i) { return i.invoice_no !== invoiceNo; });
+        storage.setItem('dsa_invoices_cache', JSON.stringify(invoices));
+        storage.setItem('difathar_invoice_records_v1', JSON.stringify(invoices));
+        return true;
+    }
+
+    try {
+        var result = await supabaseClient
+            .from('invoices')
+            .delete()
+            .eq('invoice_no', invoiceNo);
+        if (!result.error) {
+            invoices = invoices.filter(function(i) { return i.invoice_no !== invoiceNo; });
+            storage.setItem('dsa_invoices_cache', JSON.stringify(invoices));
+            storage.setItem('difathar_invoice_records_v1', JSON.stringify(invoices));
+            
+            if (window.dsaBridge) {
+                window.dsaBridge.emitInvoice({
+                    invoice_no: invoiceNo,
+                    action: 'deleted'
+                });
+            }
+            
+            return true;
+        }
+        throw result.error;
+    } catch(e) {
+        console.warn('⚠️ Delete invoice from Supabase failed:', e.message);
+        invoices = invoices.filter(function(i) { return i.invoice_no !== invoiceNo; });
+        storage.setItem('dsa_invoices_cache', JSON.stringify(invoices));
+        storage.setItem('difathar_invoice_records_v1', JSON.stringify(invoices));
+        return true;
+    }
+}
+
+// ============================================
+// PROGRAMMES FUNCTIONS
+// ============================================
+async function loadProgrammes() {
+    try {
+        if (supabaseClient && isSupabaseConnected) {
+            var result = await supabaseClient
+                .from('programmes')
+                .select('*')
+                .order('name');
+            if (!result.error && result.data) {
+                programmes = result.data;
+                storage.setItem('dsa_programmes_cache', JSON.stringify(programmes));
+                storage.setItem('difathar_programmes_v1', JSON.stringify(programmes));
+                return programmes;
+            }
+        }
+        return loadProgrammesLocal();
+    } catch(e) {
+        console.warn('⚠️ Load programmes failed:', e.message);
+        return loadProgrammesLocal();
+    }
+}
+
+function loadProgrammesLocal() {
+    try {
+        var stored = storage.getItem('dsa_programmes_cache');
+        programmes = stored ? JSON.parse(stored) : [];
+        if (programmes.length === 0) {
+            var legacy = storage.getItem('difathar_programmes_v1');
+            if (legacy) {
+                programmes = JSON.parse(legacy);
+                storage.setItem('dsa_programmes_cache', JSON.stringify(programmes));
+            } else {
+                programmes = [
+                    { id: generateUUID(), name: 'Registration', amount: 1000, is_active: true },
+                    { id: generateUUID(), name: 'U13 Academy', amount: 3000, is_active: true },
+                    { id: generateUUID(), name: 'U15 Academy', amount: 4000, is_active: true },
+                    { id: generateUUID(), name: 'U17 Academy', amount: 5000, is_active: true },
+                    { id: generateUUID(), name: 'Senior Academy', amount: 6000, is_active: true }
+                ];
+                storage.setItem('dsa_programmes_cache', JSON.stringify(programmes));
+                storage.setItem('difathar_programmes_v1', JSON.stringify(programmes));
+            }
+        }
+    } catch(e) {
+        programmes = [];
+    }
+    return programmes;
+}
+
+async function saveProgrammeToSupabase(programme) {
+    if (!supabaseClient || !isSupabaseConnected) {
+        programmes.push(programme);
+        storage.setItem('dsa_programmes_cache', JSON.stringify(programmes));
+        storage.setItem('difathar_programmes_v1', JSON.stringify(programmes));
+        return programme;
+    }
+
+    try {
+        var result = await supabaseClient
+            .from('programmes')
+            .insert(programme)
+            .select()
+            .single();
+        if (!result.error && result.data) {
+            var index = programmes.findIndex(function(p) { return p.id === result.data.id; });
+            if (index !== -1) {
+                programmes[index] = result.data;
+            } else {
+                programmes.push(result.data);
+            }
+            storage.setItem('dsa_programmes_cache', JSON.stringify(programmes));
+            storage.setItem('difathar_programmes_v1', JSON.stringify(programmes));
+            
+            if (window.dsaBridge) {
+                window.dsaBridge.emitSystem({
+                    action: 'programme_added',
+                    name: programme.name
+                });
+            }
+            
+            return result.data;
+        }
+        throw result.error;
+    } catch(e) {
+        console.warn('⚠️ Save programme to Supabase failed:', e.message);
+        programmes.push(programme);
+        storage.setItem('dsa_programmes_cache', JSON.stringify(programmes));
+        storage.setItem('difathar_programmes_v1', JSON.stringify(programmes));
+        return programme;
+    }
+}
+
+async function updateProgrammeInSupabase(id, updates) {
+    if (!supabaseClient || !isSupabaseConnected) {
+        var index = programmes.findIndex(function(p) { return p.id === id; });
+        if (index !== -1) {
+            programmes[index] = Object.assign({}, programmes[index], updates);
+            storage.setItem('dsa_programmes_cache', JSON.stringify(programmes));
+            storage.setItem('difathar_programmes_v1', JSON.stringify(programmes));
+        }
+        return programmes[index];
+    }
+
+    try {
+        var result = await supabaseClient
+            .from('programmes')
+            .update(updates)
+            .eq('id', id)
+            .select()
+            .single();
+        if (!result.error && result.data) {
+            var index = programmes.findIndex(function(p) { return p.id === id; });
+            if (index !== -1) {
+                programmes[index] = result.data;
+            }
+            storage.setItem('dsa_programmes_cache', JSON.stringify(programmes));
+            storage.setItem('difathar_programmes_v1', JSON.stringify(programmes));
+            return result.data;
+        }
+        throw result.error;
+    } catch(e) {
+        console.warn('⚠️ Update programme in Supabase failed:', e.message);
+        var index = programmes.findIndex(function(p) { return p.id === id; });
+        if (index !== -1) {
+            programmes[index] = Object.assign({}, programmes[index], updates);
+            storage.setItem('dsa_programmes_cache', JSON.stringify(programmes));
+            storage.setItem('difathar_programmes_v1', JSON.stringify(programmes));
+        }
+        return programmes[index];
+    }
+}
+
+async function deleteProgrammeFromSupabase(id) {
+    if (!supabaseClient || !isSupabaseConnected) {
+        programmes = programmes.filter(function(p) { return p.id !== id; });
+        storage.setItem('dsa_programmes_cache', JSON.stringify(programmes));
+        storage.setItem('difathar_programmes_v1', JSON.stringify(programmes));
+        return true;
+    }
+
+    try {
+        var result = await supabaseClient
+            .from('programmes')
+            .delete()
+            .eq('id', id);
+        if (!result.error) {
+            programmes = programmes.filter(function(p) { return p.id !== id; });
+            storage.setItem('dsa_programmes_cache', JSON.stringify(programmes));
+            storage.setItem('difathar_programmes_v1', JSON.stringify(programmes));
+            return true;
+        }
+        throw result.error;
+    } catch(e) {
+        console.warn('⚠️ Delete programme from Supabase failed:', e.message);
+        programmes = programmes.filter(function(p) { return p.id !== id; });
+        storage.setItem('dsa_programmes_cache', JSON.stringify(programmes));
+        storage.setItem('difathar_programmes_v1', JSON.stringify(programmes));
+        return true;
+    }
+}
+
+// ============================================
+// PAYMENT METHODS FUNCTIONS
+// ============================================
+async function loadPaymentMethods() {
+    try {
+        if (supabaseClient && isSupabaseConnected) {
+            var result = await supabaseClient
+                .from('payment_methods')
+                .select('*')
+                .order('name');
+            if (!result.error && result.data) {
+                paymentMethods = result.data;
+                storage.setItem('dsa_payment_methods_cache', JSON.stringify(paymentMethods));
+                storage.setItem('difathar_payment_methods_v1', JSON.stringify(paymentMethods));
+                return paymentMethods;
+            }
+        }
+        return loadPaymentMethodsLocal();
+    } catch(e) {
+        console.warn('⚠️ Load payment methods failed:', e.message);
+        return loadPaymentMethodsLocal();
+    }
+}
+
+function loadPaymentMethodsLocal() {
+    try {
+        var stored = storage.getItem('dsa_payment_methods_cache');
+        paymentMethods = stored ? JSON.parse(stored) : [];
+        if (paymentMethods.length === 0) {
+            var legacy = storage.getItem('difathar_payment_methods_v1');
+            if (legacy) {
+                paymentMethods = JSON.parse(legacy);
+                storage.setItem('dsa_payment_methods_cache', JSON.stringify(paymentMethods));
+            } else {
+                paymentMethods = [
+                    { id: generateUUID(), name: 'M-PESA PayBill', type: 'paybill', fields: { paybill: '247247', account: 'DIFATHAR' }, is_active: true },
+                    { id: generateUUID(), name: 'Bank Transfer', type: 'bank', fields: { bank: 'Co-operative Bank', accountName: 'DIFATHAR SOCCER ACADEMY', accountNumber: '0112956789000', branch: 'Head Office' }, is_active: true }
+                ];
+                storage.setItem('dsa_payment_methods_cache', JSON.stringify(paymentMethods));
+                storage.setItem('difathar_payment_methods_v1', JSON.stringify(paymentMethods));
+            }
+        }
+    } catch(e) {
+        paymentMethods = [];
+    }
+    return paymentMethods;
+}
+
+// ============================================
+// ESCAPE TEXT
+// ============================================
+function escapeText(value) {
+    return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+}
+window.escapeText = escapeText;
+
+// ============================================
+// RENDER MEMBERS
+// ============================================
+function renderMembers() {
+    var search = document.getElementById('memberSearch')?.value?.toLowerCase() || '';
+    var filter = document.getElementById('memberFilter')?.value || 'ALL';
+    
+    var filtered = members.filter(function(m) {
+        var matchSearch = (m.full_name || '').toLowerCase().includes(search) ||
+                         (m.student_id || '').toLowerCase().includes(search) ||
+                         (m.phone || '').toLowerCase().includes(search) ||
+                         (m.email || '').toLowerCase().includes(search) ||
+                         (m.id_number || '').toLowerCase().includes(search);
+        var matchFilter = filter === 'ALL' || m.join_as === filter;
+        return matchSearch && matchFilter;
+    });
+
+    var total = members.length;
+    var players = members.filter(function(m) { return m.join_as === 'Player'; }).length;
+    var coaches = members.filter(function(m) { return m.join_as === 'Coach'; }).length;
+    var others = total - players - coaches;
+    
+    var memTotal = document.getElementById('memTotal');
+    var memPlayers = document.getElementById('memPlayers');
+    var memCoaches = document.getElementById('memCoaches');
+    var memOthers = document.getElementById('memOthers');
+    if (memTotal) memTotal.textContent = total;
+    if (memPlayers) memPlayers.textContent = players;
+    if (memCoaches) memCoaches.textContent = coaches;
+    if (memOthers) memOthers.textContent = others;
+
+    var tbody = document.getElementById('membersTableBody');
+    var empty = document.getElementById('memEmpty');
+    if (tbody) tbody.innerHTML = '';
+    if(filtered.length === 0) { if (empty) empty.style.display = 'block'; return; }
+    if (empty) empty.style.display = 'none';
+
+    filtered.forEach(function(m) {
+        var row = document.createElement('tr');
+        var registeredDate = m.registered_at ? new Date(m.registered_at).toLocaleDateString('en-GB') : 'N/A';
+        row.innerHTML = '<td><strong>' + (m.student_id || 'N/A') + '</strong></td><td>' + (m.full_name || '') + '</td><td>' + (m.phone || '') + '</td><td>' + (m.email || '') + '</td><td>' + (m.join_as || '') + '</td><td>' + (m.sport || '') + '</td><td style="font-size:var(--text-xs);">' + registeredDate + '</td><td><div style="display:flex;gap:2px;flex-wrap:wrap;"><button class="btn-view-member" onclick="viewMember(\'' + (m.student_id || '') + '\')"><i class="fas fa-eye"></i></button><button class="btn-delete-member" onclick="deleteMember(\'' + (m.student_id || '') + '\')"><i class="fas fa-trash"></i></button></div></td>';
+        if (tbody) tbody.appendChild(row);
+    });
+}
+window.renderMembers = renderMembers;
+
+// ============================================
+// RENDER INVOICES
+// ============================================
+function renderInvoices() {
+    var search = document.getElementById('invSearch')?.value?.toLowerCase() || '';
+    var filter = document.getElementById('invFilter')?.value || 'ALL';
+    
+    var filtered = invoices.filter(function(inv) {
+        var matchSearch = (inv.invoice_no || '').toLowerCase().includes(search) ||
+                           (inv.student_name || '').toLowerCase().includes(search) ||
+                           (inv.student_id || '').toLowerCase().includes(search) ||
+                           (inv.transaction_reference || '').toLowerCase().includes(search);
+        var matchStatus = filter === 'ALL' || inv.status === filter;
+        return matchSearch && matchStatus;
+    });
+
+    var total = invoices.length;
+    var paid = invoices.filter(function(i) { return i.status === STATUS.PAID; }).length;
+    var pending = invoices.filter(function(i) { return i.status === STATUS.PENDING; }).length;
+    var unpaid = invoices.filter(function(i) { return i.status === STATUS.UNPAID; }).length;
+    
+    var invTotal = document.getElementById('invTotal');
+    var invPaid = document.getElementById('invPaid');
+    var invPending = document.getElementById('invPending');
+    var invUnpaid = document.getElementById('invUnpaid');
+    if (invTotal) invTotal.textContent = total;
+    if (invPaid) invPaid.textContent = paid;
+    if (invPending) invPending.textContent = pending;
+    if (invUnpaid) invUnpaid.textContent = unpaid;
+
+    var tbody = document.getElementById('invTableBody');
+    var empty = document.getElementById('invEmpty');
+    if (tbody) tbody.innerHTML = '';
+    if(filtered.length === 0) { if (empty) empty.style.display = 'block'; return; }
+    if (empty) empty.style.display = 'none';
+
+    filtered.forEach(function(inv) {
+        var statusClass = inv.status === STATUS.PAID ? 'paid' : 
+                         (inv.status === STATUS.PENDING ? 'pending' : 'unpaid');
+        var displayStatus = inv.status || STATUS.UNPAID;
+        var row = document.createElement('tr');
+        row.innerHTML = '<td><strong>' + (inv.invoice_no || '') + '</strong></td><td>' + (inv.student_name || '') + '<br><span style="font-size:var(--text-xs);color:var(--text-muted);">' + (inv.student_id || '') + '</span></td><td>' + (inv.programme || '') + '</td><td>KSh ' + ((inv.amount || 0).toLocaleString()) + '</td><td style="font-size:var(--text-xs);">' + (inv.transaction_reference || '—') + '</td><td><span class="status-badge ' + statusClass + '"><span class="dot"></span> ' + displayStatus + '</span></td><td style="font-size:var(--text-xs);">' + (inv.created_at ? new Date(inv.created_at).toLocaleDateString('en-GB') : '') + '</td><td class="accept-cell"><input type="checkbox" ' + (inv.accepted ? 'checked' : '') + ' onchange="toggleInvoiceAccept(\'' + inv.invoice_no + '\', this.checked)"></td><td><div class="invoice-actions"><button class="btn-view" onclick="viewInvoice(\'' + inv.invoice_no + '\')"><i class="fas fa-eye"></i></button>' + (inv.status !== STATUS.PAID ? '<button class="btn-paid" onclick="markInvoicePaid(\'' + inv.invoice_no + '\')"><i class="fas fa-check"></i></button>' : '') + '<button class="btn-delete" onclick="deleteInvoice(\'' + inv.invoice_no + '\')"><i class="fas fa-trash"></i></button></div></td>';
+        if (tbody) tbody.appendChild(row);
+    });
+}
+window.renderInvoices = renderInvoices;
+
+// ============================================
+// RENDER PROGRAMMES
+// ============================================
+function renderProgrammesList() {
+    var container = document.getElementById('programmesList');
+    if(!programmes || programmes.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);font-size:var(--text-sm);">No programmes configured.</p>';
+        return;
+    }
+    var html = '';
+    programmes.forEach(function(prog) {
+        var statusClass = prog.is_active !== false ? 'active' : 'inactive';
+        var statusText = prog.is_active !== false ? 'ACTIVE' : 'INACTIVE';
+        html += '<div class="payment-method-item"><div class="info"><div class="name">' + escapeText(prog.name) + ' <span class="status-badge-sm ' + statusClass + '">' + statusText + '</span></div><div class="details">Amount: KSh ' + ((prog.amount || 0).toLocaleString()) + '</div></div><div class="actions"><button class="btn-edit" onclick="editProgramme(\'' + prog.id + '\')"><i class="fas fa-edit"></i></button><button class="btn-delete" onclick="deleteProgramme(\'' + prog.id + '\')"><i class="fas fa-trash"></i></button></div></div>';
+    });
+    container.innerHTML = html;
+}
+window.renderProgrammesList = renderProgrammesList;
+
+// ============================================
+// RENDER PAYMENT METHODS
+// ============================================
+function renderPaymentMethodsList() {
+    var container = document.getElementById('paymentMethodsList');
+    if(!paymentMethods || paymentMethods.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted);font-size:var(--text-sm);padding:12px 0;text-align:center;">No payment methods configured.</p>';
+        return;
+    }
+    var html = '';
+    paymentMethods.forEach(function(method) {
+        var typeLabel = method.type || 'custom';
+        var statusClass = method.is_active !== false ? 'active' : 'inactive';
+        var statusText = method.is_active !== false ? 'ACTIVE' : 'INACTIVE';
+        var detailsStr = '';
+        var fieldsHtml = '';
+        if (method.fields) {
+            var fieldEntries = Object.entries(method.fields).filter(function(entry) { return entry[1]; });
+            detailsStr = fieldEntries.map(function(entry) { return entry[1]; }).join(' • ');
+            fieldsHtml = '<div class="payment-fields">';
+            fieldEntries.forEach(function(entry) {
+                var label = entry[0].charAt(0).toUpperCase() + entry[0].slice(1).replace(/_/g, ' ');
+                fieldsHtml += '<div><strong>' + escapeText(label) + ':</strong> ' + escapeText(entry[1]) + '</div>';
+            });
+            fieldsHtml += '</div>';
+        }
+        html += '<div class="payment-method-item"><div class="info"><div class="name">' + escapeText(method.name) + ' <span class="status-badge-sm ' + statusClass + '">' + statusText + '</span></div><div class="details">' + escapeText(detailsStr) + '</div><span class="type-badge ' + typeLabel.toLowerCase() + '">' + typeLabel.toUpperCase() + '</span>' + fieldsHtml + '</div><div class="actions"><button class="btn-view-only"><i class="fas fa-lock"></i> Read Only</button></div></div>';
+    });
+    container.innerHTML = html;
+}
+window.renderPaymentMethodsList = renderPaymentMethodsList;
+
+// ============================================
+// UPDATE STATS
+// ============================================
+function updateStats() {
+    var invCount = invoices.length;
+    var memCount = members.length;
+    var progCount = programmes.length;
+    var payCount = paymentMethods.length;
+    
+    var statMembers = document.getElementById('statMembers');
+    var statInvoices = document.getElementById('statInvoices');
+    var statProgrammes = document.getElementById('statProgrammes');
+    var statPayments = document.getElementById('statPayments');
+    var badge = document.getElementById('invoiceBadge');
+    var memberBadge = document.getElementById('memberBadge');
+    
+    if (statMembers) statMembers.textContent = memCount;
+    if (statInvoices) statInvoices.textContent = invCount;
+    if (statProgrammes) statProgrammes.textContent = progCount;
+    if (statPayments) statPayments.textContent = payCount;
+    if (badge) badge.textContent = invCount;
+    if (memberBadge) memberBadge.textContent = memCount;
+    
+    var totalRevenue = 0;
+    invoices.forEach(function(inv) { if(inv.status === STATUS.PAID) totalRevenue += (inv.amount || 0); });
+    
+    var tr = document.getElementById('totalRevenue');
+    if (tr) tr.textContent = 'KSh ' + totalRevenue.toLocaleString();
+    
+    var totalMembers = document.getElementById('totalMembers');
+    if (totalMembers) totalMembers.textContent = memCount;
+    
+    var peerCount = document.getElementById('dashPeerCount');
+    if (peerCount) peerCount.textContent = window.dsaBridge ? window.dsaBridge.getStatus().listeners : 0;
+}
+window.updateStats = updateStats;
+
+// ============================================
+// NAVIGATION
+// ============================================
+function navigateTo(page) {
+    document.querySelectorAll('.nav-item').forEach(function(el) { el.classList.remove('active'); });
+    var navItem = document.querySelector('.nav-item[data-page="' + page + '"]');
+    if (navItem) navItem.classList.add('active');
+    document.querySelectorAll('.page').forEach(function(el) { el.classList.remove('active'); });
+    var target = document.getElementById('page-' + page);
+    if (target) target.classList.add('active');
+    
+    var titles = {
+        dashboard: 'Dashboard', members: 'Member Management',
+        invoices: 'Invoice Management', programmes: 'Programme Management', 
+        payments: 'Payment Methods (Read Only)', settings: 'Site Settings', backup: 'Backup & Restore'
+    };
+    var icons = {
+        dashboard: 'th-large', members: 'users', invoices: 'file-invoice', 
+        programmes: 'trophy', payments: 'credit-card', settings: 'cog', backup: 'database'
+    };
+    var titleEl = document.getElementById('pageTitle');
+    if (titleEl) {
+        titleEl.innerHTML = '<i class="fas fa-' + (icons[page] || 'folder') + '"></i> ' + (titles[page] || page);
+    }
+    
+    if(page === 'members') { renderMembers(); }
+    if(page === 'invoices') { renderInvoices(); }
+    if(page === 'programmes') { renderProgrammesList(); }
+    if(page === 'payments') { renderPaymentMethodsList(); }
+    if(page === 'settings') { updateSettingsForm(); updateSocialPreview(); }
+    if(page === 'dashboard') updateStats();
+    
+    if(window.innerWidth <= 768) {
+        document.getElementById('mainSidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+}
+window.navigateTo = navigateTo;
+
+// ============================================
+// SIDEBAR
+// ============================================
+function toggleSidebar() {
+    var sidebar = document.getElementById('mainSidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('show');
+}
+window.toggleSidebar = toggleSidebar;
+
+// ============================================
+// MEMBER MODAL
+// ============================================
+function openMemberModal() {
+    var previewId = generateStudentId();
+    document.getElementById('mStudentID').value = previewId;
+    document.getElementById('memberModal').classList.add('show');
+    document.getElementById('mFullName').focus();
+}
+window.openMemberModal = openMemberModal;
+
+function closeMemberModal() {
+    document.getElementById('memberModal').classList.remove('show');
+    var fields = ['mFullName','mStudentID','mIdNumber','mPhone','mEmail','mGender','mNationality','mJoinAs','mSport','mExperience','mCounty','mConstituency','mWard','mParentName','mParentRel','mParentPhone','mParentEmail'];
+    fields.forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+}
+window.closeMemberModal = closeMemberModal;
+
+// ============================================
+// SAVE NEW MEMBER
+// ============================================
+async function saveNewMember() {
+    var fullName = document.getElementById('mFullName').value.trim();
+    var studentID = document.getElementById('mStudentID').value.trim();
+    var phone = document.getElementById('mPhone').value.trim();
+    var joinAs = document.getElementById('mJoinAs').value;
+    
+    if(!fullName) { showToast('Please enter full name', 'error'); document.getElementById('mFullName').focus(); return; }
+    if(!studentID) { showToast('Please enter student ID', 'error'); document.getElementById('mStudentID').focus(); return; }
+    if(!phone) { showToast('Please enter phone number', 'error'); document.getElementById('mPhone').focus(); return; }
+    if(!joinAs) { showToast('Please select a role', 'error'); document.getElementById('mJoinAs').focus(); return; }
+    
+    var existing = members.find(function(m) { return m.student_id === studentID; });
+    if(existing) { 
+        showToast('Student ID already exists! Generating new one...', 'error');
+        studentID = generateStudentId();
+        document.getElementById('mStudentID').value = studentID;
+        setTimeout(function() { saveNewMember(); }, 500);
+        return;
+    }
+    
+    var newMember = {
+        student_id: studentID,
+        full_name: fullName,
+        id_number: document.getElementById('mIdNumber').value.trim(),
+        phone: phone,
+        email: document.getElementById('mEmail').value.trim(),
+        gender: document.getElementById('mGender').value,
+        nationality: document.getElementById('mNationality').value.trim() || 'Kenyan',
+        join_as: joinAs,
+        sport: document.getElementById('mSport').value.trim(),
+        experience: document.getElementById('mExperience').value,
+        county: document.getElementById('mCounty').value.trim(),
+        constituency: document.getElementById('mConstituency').value.trim(),
+        ward: document.getElementById('mWard').value.trim(),
+        parent_name: document.getElementById('mParentName').value.trim(),
+        parent_relationship: document.getElementById('mParentRel').value.trim(),
+        parent_phone: document.getElementById('mParentPhone').value.trim(),
+        parent_email: document.getElementById('mParentEmail').value.trim(),
+        registered_at: new Date().toISOString()
+    };
+    
+    await saveMemberToSupabase(newMember);
+    closeMemberModal();
+    renderMembers();
+    updateStats();
+    showToast('✅ Member ' + fullName + ' added successfully! (ID: ' + studentID + ')');
+}
+window.saveNewMember = saveNewMember;
+
+// ============================================
+// VIEW / DELETE MEMBER
+// ============================================
+function viewMember(id) {
+    var member = members.find(function(m) { return m.student_id === id; });
+    if(!member) return;
+    var details = '📋 MEMBER DETAILS\n\n';
+    details += 'Name: ' + (member.full_name || '') + '\n';
+    details += 'Student ID: ' + (member.student_id || '') + '\n';
+    details += 'ID Number: ' + (member.id_number || '') + '\n';
+    details += 'Phone: ' + (member.phone || '') + '\n';
+    details += 'Email: ' + (member.email || '') + '\n';
+    details += 'Gender: ' + (member.gender || '') + '\n';
+    details += 'Nationality: ' + (member.nationality || '') + '\n';
+    details += 'Role: ' + (member.join_as || '') + '\n';
+    details += 'Sport: ' + (member.sport || '') + '\n';
+    details += 'Experience: ' + (member.experience || '') + '\n';
+    details += 'County: ' + (member.county || '') + '\n';
+    details += 'Constituency: ' + (member.constituency || '') + '\n';
+    details += 'Ward: ' + (member.ward || '') + '\n';
+    details += 'Registered: ' + (member.registered_at ? new Date(member.registered_at).toLocaleString() : '') + '\n';
+    if(member.parent_name) {
+        details += '\nParent/Guardian:\n';
+        details += '  Name: ' + (member.parent_name || '') + '\n';
+        details += '  Relationship: ' + (member.parent_relationship || '') + '\n';
+        details += '  Phone: ' + (member.parent_phone || '') + '\n';
+        details += '  Email: ' + (member.parent_email || '') + '\n';
+    }
+    alert(details);
+}
+window.viewMember = viewMember;
+
+async function deleteMember(id) {
+    if(!confirm('Delete member ' + id + '?')) return;
+    await deleteMemberFromSupabase(id);
+    renderMembers();
+    updateStats();
+}
+window.deleteMember = deleteMember;
+
+// ============================================
+// EXPORT / REFRESH MEMBERS
+// ============================================
+function exportMembers() {
+    if(members.length === 0) { showToast('No members to export', 'error'); return; }
+    var blob = new Blob([JSON.stringify(members, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'dsa_members_' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('✅ Members exported!');
+}
+window.exportMembers = exportMembers;
+
+function refreshMembers() {
+    loadMembers().then(function() {
+        renderMembers();
+        updateStats();
+        showToast('🔄 Members refreshed from Supabase');
+    });
+}
+window.refreshMembers = refreshMembers;
+
+// ============================================
+// INVOICE ACTIONS
+// ============================================
+async function toggleInvoiceAccept(no, checked) {
+    var inv = invoices.find(function(i) { return i.invoice_no === no; });
+    if(!inv) return;
+    var updates = { accepted: checked };
+    if(checked && (inv.status === STATUS.PENDING) && inv.transaction_reference) {
+        updates.status = STATUS.PAID;
+    }
+    await updateInvoiceInSupabase(no, updates);
+    renderInvoices();
+    showToast(checked ? '✅ Invoice accepted' : 'Acceptance removed');
+}
+window.toggleInvoiceAccept = toggleInvoiceAccept;
+
+async function markInvoicePaid(no) {
+    var inv = invoices.find(function(i) { return i.invoice_no === no; });
+    if(!inv) return;
+    if(inv.status === STATUS.PAID) { showToast('Already paid', 'error'); return; }
+    if(!confirm('Mark this invoice as PAID?')) return;
+    await updateInvoiceInSupabase(no, { 
+        status: STATUS.PAID, 
+        accepted: true, 
+        paid_at: new Date().toISOString() 
+    });
+    renderInvoices();
+    showToast('✅ Invoice marked as PAID');
+}
+window.markInvoicePaid = markInvoicePaid;
+
+function viewInvoice(no) {
+    var inv = invoices.find(function(i) { return i.invoice_no === no; });
+    if(!inv) return;
+    alert('📄 INVOICE DETAILS\n\nInvoice: ' + inv.invoice_no + '\nStudent: ' + inv.student_name + '\nID: ' + inv.student_id + '\nProgramme: ' + inv.programme + '\nAmount: KSh ' + (inv.amount || 0).toLocaleString() + '\nStatus: ' + inv.status + '\nReference: ' + (inv.transaction_reference || 'Not submitted') + '\nDate: ' + (inv.created_at ? new Date(inv.created_at).toLocaleDateString('en-GB') : '') + '\nAccepted: ' + (inv.accepted ? '✅ Yes' : '❌ No'));
+}
+window.viewInvoice = viewInvoice;
+
+async function deleteInvoice(no) {
+    if(!confirm('Delete invoice ' + no + '?')) return;
+    await deleteInvoiceFromSupabase(no);
+    renderInvoices();
+    updateStats();
+    showToast('🗑️ Invoice deleted');
+}
+window.deleteInvoice = deleteInvoice;
+
+// ============================================
+// PROGRAMME ACTIONS
+// ============================================
+async function addProgramme() {
+    var name = prompt('Enter programme name:');
+    if(!name) return;
+    var amount = parseFloat(prompt('Enter programme fee (KSh):')) || 1000;
+    var newProg = { 
+        id: generateUUID(),
+        name: name, 
+        amount: amount, 
+        is_active: true,
+        created_at: new Date().toISOString()
+    };
+    await saveProgrammeToSupabase(newProg);
+    renderProgrammesList();
+    updateStats();
+    showToast('✅ Programme added: ' + name);
+}
+window.addProgramme = addProgramme;
+
+async function editProgramme(id) {
+    var prog = programmes.find(function(p) { return p.id === id; });
+    if(!prog) return;
+    var name = prompt('Edit programme name:', prog.name);
+    if(name) prog.name = name;
+    var amount = parseFloat(prompt('Edit programme fee (KSh):', prog.amount));
+    if(amount) prog.amount = amount;
+    await updateProgrammeInSupabase(id, { name: prog.name, amount: prog.amount });
+    renderProgrammesList();
+    updateStats();
+    showToast('✅ Programme updated');
+}
+window.editProgramme = editProgramme;
+
+async function deleteProgramme(id) {
+    if(!confirm('Delete this programme?')) return;
+    await deleteProgrammeFromSupabase(id);
+    renderProgrammesList();
+    updateStats();
+    showToast('✅ Programme deleted');
+}
+window.deleteProgramme = deleteProgramme;
+
+async function resetDefaultProgrammes() {
+    if(!confirm('Reset programmes to defaults?')) return;
+    var defaults = [
+        { id: generateUUID(), name: 'Registration', amount: 1000, is_active: true },
+        { id: generateUUID(), name: 'U13 Academy', amount: 3000, is_active: true },
+        { id: generateUUID(), name: 'U15 Academy', amount: 4000, is_active: true },
+        { id: generateUUID(), name: 'U17 Academy', amount: 5000, is_active: true },
+        { id: generateUUID(), name: 'Senior Academy', amount: 6000, is_active: true }
+    ];
+    for (var i = 0; i < defaults.length; i++) {
+        await saveProgrammeToSupabase(defaults[i]);
+    }
+    await loadProgrammes();
+    renderProgrammesList();
+    updateStats();
+    showToast('✅ Programmes reset to defaults');
+}
+window.resetDefaultProgrammes = resetDefaultProgrammes;
+
+// ============================================
+// EXPORT / IMPORT / RESET
+// ============================================
+function exportData() {
+    var exportObj = { 
+        version: '4.1', 
+        exportedAt: new Date().toISOString(), 
+        members: members,
+        invoices: invoices,
+        programmes: programmes,
+        paymentMethods: paymentMethods,
+        settings: settings
+    };
+    var blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'dsa_backup_' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast('✅ Backup exported!');
+}
+window.exportData = exportData;
+
+function importData(event) {
+    var file = event.target.files[0];
+    if(!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            var imported = JSON.parse(e.target.result);
+            if(!imported.members || !imported.invoices) { showToast('Invalid backup file', 'error'); return; }
+            if(!confirm('This will replace ALL current data. Continue?')) return;
+            members = imported.members || [];
+            invoices = imported.invoices || [];
+            programmes = imported.programmes || [];
+            paymentMethods = imported.paymentMethods || [];
+            settings = imported.settings || {};
+            storage.setItem('dsa_members_cache', JSON.stringify(members));
+            storage.setItem('dsa_invoices_cache', JSON.stringify(invoices));
+            storage.setItem('dsa_programmes_cache', JSON.stringify(programmes));
+            storage.setItem('dsa_payment_methods_cache', JSON.stringify(paymentMethods));
+            storage.setItem('dsa_settings_cache', JSON.stringify(settings));
+            if (isSupabaseConnected && supabaseClient) {
+                syncAllToSupabase();
+            }
+            renderInvoices();
+            renderProgrammesList();
+            renderPaymentMethodsList();
+            renderMembers();
+            updateStats();
+            updateSocialPreview();
+            updateSettingsForm();
+            showToast('✅ Backup imported');
+        } catch(err) {
+            showToast('Error importing backup: ' + err.message, 'error');
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+}
+window.importData = importData;
+
+async function syncAllToSupabase() {
+    try {
+        for (var i = 0; i < members.length; i++) {
+            await supabaseClient.from('members').upsert(members[i]);
+        }
+        for (var j = 0; j < invoices.length; j++) {
+            await supabaseClient.from('invoices').upsert(invoices[j]);
+        }
+        for (var k = 0; k < programmes.length; k++) {
+            await supabaseClient.from('programmes').upsert(programmes[k]);
+        }
+        for (var l = 0; l < paymentMethods.length; l++) {
+            await supabaseClient.from('payment_methods').upsert(paymentMethods[l]);
+        }
+        await saveSettingsToSupabase();
+        showToast('✅ Data synced to Supabase');
+    } catch(e) {
+        console.warn('⚠️ Sync to Supabase failed:', e.message);
+    }
+}
+
+function resetAll() {
+    if(!confirm('⚠️ Reset ALL data to defaults? This cannot be undone!')) return;
+    if(!confirm('Are you sure?')) return;
+    members = [];
+    invoices = [];
+    paymentMethods = [];
+    programmes = [
+        { id: generateUUID(), name: 'Registration', amount: 1000, is_active: true },
+        { id: generateUUID(), name: 'U13 Academy', amount: 3000, is_active: true },
+        { id: generateUUID(), name: 'U15 Academy', amount: 4000, is_active: true },
+        { id: generateUUID(), name: 'U17 Academy', amount: 5000, is_active: true },
+        { id: generateUUID(), name: 'Senior Academy', amount: 6000, is_active: true }
+    ];
+    settings = getDefaultSettings();
+    storage.setItem('dsa_members_cache', JSON.stringify(members));
+    storage.setItem('dsa_invoices_cache', JSON.stringify(invoices));
+    storage.setItem('dsa_programmes_cache', JSON.stringify(programmes));
+    storage.setItem('dsa_payment_methods_cache', JSON.stringify(paymentMethods));
+    storage.setItem('dsa_settings_cache', JSON.stringify(settings));
+    storage.setItem('difathar_registration_records', JSON.stringify(members));
+    storage.setItem('difathar_invoice_records_v1', JSON.stringify(invoices));
+    storage.setItem('difathar_programmes_v1', JSON.stringify(programmes));
+    storage.setItem('difathar_payment_methods_v1', JSON.stringify(paymentMethods));
+    renderInvoices();
+    renderProgrammesList();
+    renderPaymentMethodsList();
+    renderMembers();
+    updateStats();
+    updateSettingsForm();
+    updateSocialPreview();
+    showToast('✅ All data reset');
+}
+window.resetAll = resetAll;
+
+// ============================================
+// SAVE ALL
+// ============================================
+function saveAll() {
+    if(document.getElementById('page-settings')?.classList.contains('active')) saveSettings();
+    if (isSupabaseConnected && supabaseClient) {
+        syncAllToSupabase();
+    }
+    updateStats();
+    showToast('✅ All changes saved');
+}
+window.saveAll = saveAll;
+
+// ============================================
+// EXTERNAL LINKS
+// ============================================
+function openInvoiceSystem() {
+    window.open('invoice.html?source=cms', '_blank');
+    showToast('📄 Opening Invoice System...');
+}
+window.openInvoiceSystem = openInvoiceSystem;
+
+function openRegistration() {
+    window.open('index.html', '_blank');
+    showToast('📝 Opening Registration...');
+}
+window.openRegistration = openRegistration;
+
+// ============================================
+// ADMIN AUTHENTICATION
+// ============================================
+var ADMIN_PASSCODE = "9586";
+var isAuthenticated = sessionStorage.getItem('dsa_admin_auth') === 'true';
+var authOverlay = document.getElementById('adminAuthOverlay');
+var authPasscode = document.getElementById('adminAuthPasscode');
+var authError = document.getElementById('authError');
+var authLoginBtn = document.getElementById('authLoginBtn');
+
+function showAuthOverlay() {
+    authOverlay.classList.add('show');
+    authPasscode.value = '';
+    authError.style.display = 'none';
+    setTimeout(function() { authPasscode.focus(); }, 100);
+    var sidebar = document.querySelector('.sidebar');
+    var main = document.querySelector('.main');
+    if (sidebar) sidebar.style.display = 'none';
+    if (main) main.style.display = 'none';
+}
+
+function hideAuthOverlay() {
+    authOverlay.classList.remove('show');
+    var sidebar = document.querySelector('.sidebar');
+    var main = document.querySelector('.main');
+    if (sidebar) sidebar.style.display = 'flex';
+    if (main) main.style.display = 'flex';
+    if(window.innerWidth <= 768) {
+        document.getElementById('mainSidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+}
+
+function verifyAuth() {
+    if (authPasscode.value === ADMIN_PASSCODE) {
+        sessionStorage.setItem('dsa_admin_auth', 'true');
+        isAuthenticated = true;
+        hideAuthOverlay();
+        initializeCMS();
+        showToast('✅ Admin access granted!');
+    } else {
+        authError.style.display = 'block';
+        authPasscode.value = '';
+        authPasscode.focus();
+        showToast('❌ Incorrect passcode', 'error');
+    }
+}
+
+authLoginBtn.addEventListener('click', verifyAuth);
+authPasscode.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') verifyAuth();
+    if (e.key === 'Escape') { authError.style.display = 'none'; authPasscode.value = ''; }
+});
+
+function checkAdminAuth() {
+    if (!isAuthenticated) {
+        showAuthOverlay();
+        return false;
+    }
+    return true;
+}
+
+function logoutAdmin() {
+    sessionStorage.removeItem('dsa_admin_auth');
+    isAuthenticated = false;
+    var previousPage = document.referrer || 'index.html';
+    if (previousPage === window.location.href || previousPage === '') {
+        previousPage = 'index.html';
+    }
+    window.location.href = previousPage;
+}
+window.logoutAdmin = logoutAdmin;
+
+// ============================================
+// NAVIGATION CLICK HANDLERS
+// ============================================
+document.querySelectorAll('.nav-item').forEach(function(el) {
+    el.addEventListener('click', function() { 
+        navigateTo(this.dataset.page); 
+    });
+});
+
+// ============================================
+// WINDOW EVENTS
+// ============================================
+window.addEventListener('beforeunload', function() {
+    saveAll();
+});
+
+window.addEventListener('resize', function() {
+    if(window.innerWidth > 768) {
+        document.getElementById('mainSidebar').classList.remove('open');
+        document.getElementById('sidebarOverlay').classList.remove('show');
+    }
+});
+
+// ============================================
+// DSA BRIDGE INTEGRATION
+// ============================================
+if (window.dsaBridge) {
+    console.log('🔗 DSA Bridge connected (CMS Admin)');
+
+    window.dsaBridge.subscribe(function(data) {
+        console.log('📢 CMS received from bridge:', data);
+        
+        if (data.type === 'registration') {
+            loadMembers().then(function() {
+                renderMembers();
+                updateStats();
+                showToast('📋 New registration: ' + (data.data?.full_name || 'someone'));
+            });
+        } else if (data.type === 'payment') {
+            loadInvoices().then(function() {
+                renderInvoices();
+                updateStats();
+                showToast('💳 Payment event received');
+            });
+        } else if (data.type === 'invoice') {
+            loadInvoices().then(function() {
+                renderInvoices();
+                updateStats();
+            });
+        } else if (data.type === 'member_updated') {
+            loadMembers().then(function() {
+                renderMembers();
+                updateStats();
+            });
+        } else if (data.type === 'heartbeat') {
+            var statusDot = document.getElementById('cmsStatusDot');
+            var statusText = document.getElementById('cmsStatusText');
+            var statusContainer = document.getElementById('cmsConnectionStatus');
+            
+            if (window.dsaBridge && window.dsaBridge.isConnected()) {
+                statusDot.style.background = '#16a34a';
+                statusText.textContent = 'CONNECTED';
+                statusContainer.className = 'dsa-bridge-status';
+            } else {
+                statusDot.style.background = '#ef4444';
+                statusText.textContent = 'OFFLINE';
+                statusContainer.className = 'dsa-bridge-status offline';
+            }
+        }
+    });
+
+    window.dsaBridge.on('system', function(data) {
+        console.log('⚙️ System event received:', data);
+        if (data.data?.action === 'sync_all') {
+            syncAllToSupabase();
+        } else if (data.data?.action === 'programme_added') {
+            loadProgrammes().then(function() {
+                renderProgrammesList();
+                updateStats();
+            });
+        }
+    });
+
+    console.log('✅ DSA Bridge integration complete');
+} else {
+    console.warn('⚠️ DSA Bridge not available');
+}
+
+// ============================================
+// INITIALIZE CMS
+// ============================================
+function initializeCMS() {
+    initSupabase();
+    
+    console.log('✅ DSA CMS v4.1 with Supabase Integration loaded');
+}
+
+// ============================================
+// START
+// ============================================
+if (!checkAdminAuth()) {
+    showAuthOverlay();
+} else {
+    initializeCMS();
+}
+
+console.log('✅ DSA CMS v4.1 with Supabase Integration loaded (Fixed Settings)');
+</script>
+</body>
+</html>

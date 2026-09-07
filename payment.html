@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Secure Payment Details</title>
+
+  <style>
+    /* ---------- reset & base ---------- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      background: #020508;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    /* ---------- main payment card ---------- */
+    .payment-card {
+      position: relative;
+      width: 100%;
+      max-width: 480px;
+      background:
+        radial-gradient(circle at 50% 16%, rgba(31, 45, 62, .35), transparent 25%),
+        radial-gradient(circle at 50% 62%, rgba(16, 28, 42, .25), transparent 38%),
+        linear-gradient(135deg, #02070c 0%, #08131f 48%, #02070c 100%);
+      border-radius: 32px;
+      padding: 18px 14px 22px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.85);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* outer frame – subtle gold border */
+    .payment-card::before {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border: 2px solid rgba(200, 148, 37, 0.5);
+      border-radius: 26px;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    .payment-card::after {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border: 1px solid rgba(246, 202, 92, 0.25);
+      border-radius: 20px;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    /* ---------- side decorations ---------- */
+    .side-pattern {
+      position: absolute;
+      top: 8%;
+      bottom: 8%;
+      width: 5%;
+      opacity: .3;
+      background-image: radial-gradient(circle, #d49b29 1.5px, transparent 2px);
+      background-size: 10px 10px;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 15%, #000 85%, transparent 100%);
+      mask-image: linear-gradient(to bottom, transparent 0, #000 15%, #000 85%, transparent 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .side-pattern.right {
+      right: 2px;
+    }
+
+    .side-pattern.left {
+      left: 2px;
+      transform: rotate(180deg);
+      opacity: .2;
+    }
+
+    .corner-gold {
+      position: absolute;
+      width: 16%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #ffe29a, #b97b0d);
+      border-radius: 50%;
+      box-shadow: 0 0 6px #e7ad38;
+      z-index: 2;
+    }
+
+    .corner-gold.top-left {
+      top: 14px;
+      left: 16px;
+    }
+
+    .corner-gold.top-right {
+      top: 14px;
+      right: 16px;
+      transform: rotate(180deg);
+    }
+
+    .corner-gold.bottom-left {
+      bottom: 14px;
+      left: 16px;
+      transform: rotate(180deg);
+    }
+
+    .corner-gold.bottom-right {
+      bottom: 14px;
+      right: 16px;
+    }
+
+    /* ---------- premium back button ---------- */
+    .back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(200, 148, 37, 0.25);
+      border-radius: 40px;
+      padding: 6px 14px 6px 10px;
+      color: #e8b84a;
+      font-size: clamp(12px, 2.2vw, 15px);
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 215, 140, 0.08);
+      letter-spacing: 0.03em;
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(200, 148, 37, 0.5);
+      box-shadow: 0 4px 24px rgba(200, 148, 37, 0.12), inset 0 1px 0 rgba(255, 215, 140, 0.12);
+      transform: translateX(-2px);
+    }
+
+    .back-btn:active {
+      transform: scale(0.95);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .back-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: #e8b84a;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+      transition: transform 0.2s ease;
+    }
+
+    .back-btn:hover svg {
+      transform: translateX(-3px);
+    }
+
+    .back-btn .label {
+      white-space: nowrap;
+    }
+
+    /* ---------- content ---------- */
+    .content {
+      position: relative;
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      flex: 1;
+      padding-top: 8px;
+    }
+
+    /* ---------- lock ---------- */
+    .lock-wrap {
+      width: 56px;
+      max-width: 14%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      border: 2.5px solid #d89d27;
+      background: radial-gradient(circle, #182838, #03080d 72%);
+      box-shadow: 0 0 10px #f0b53d, inset 0 0 10px rgba(255, 213, 113, .35);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+      margin-bottom: 2px;
+    }
+
+    .lock {
+      width: 40%;
+      height: 42%;
+      background: #e5ad39;
+      border: 2px solid #ffd976;
+      border-radius: 4px;
+      position: relative;
+      box-shadow: 0 2px 6px #000;
+    }
+
+    .lock::before {
+      content: "";
+      position: absolute;
+      width: 48%;
+      height: 54%;
+      left: 22%;
+      top: -50%;
+      border: 2.5px solid #e5ad39;
+      border-bottom: 0;
+      border-radius: 30px 30px 0 0;
+    }
+
+    .lock::after {
+      content: "";
+      position: absolute;
+      width: 20%;
+      height: 30%;
+      border-radius: 50%;
+      background: #18212b;
+      left: 50%;
+      top: 36%;
+      transform: translateX(-50%);
+      box-shadow: 0 6px 0 -2px #18212b;
+    }
+
+    /* ---------- ornament ---------- */
+    .ornament {
+      width: 55%;
+      height: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 2px 0 0;
+      flex-shrink: 0;
+    }
+
+    .ornament::before,
+    .ornament::after {
+      content: "";
+      height: 1px;
+      flex: 1;
+      background: linear-gradient(90deg, transparent, #dba83d);
+    }
+
+    .ornament::after {
+      background: linear-gradient(90deg, #dba83d, transparent);
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #e8b23e;
+      box-shadow: 0 0 5px #e8b23e;
+      flex-shrink: 0;
+    }
+
+    /* ---------- titles ---------- */
+    .secure {
+      font-family: "Brush Script MT", "Segoe Script", cursive;
+      font-size: clamp(28px, 8vw, 52px);
+      line-height: 1.1;
+      color: #e7b542;
+      text-shadow: 0 2px 2px #000, 0 0 8px rgba(255, 200, 80, .25);
+      transform: rotate(-1.5deg);
+      white-space: nowrap;
+      margin-top: -2px;
+    }
+
+    .payment {
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 900;
+      letter-spacing: -.02em;
+      font-size: clamp(44px, 13vw, 96px);
+      line-height: 1;
+      background: linear-gradient(#fff0ad 4%, #f1c65d 22%, #9e650d 62%, #ffe293 92%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-stroke: 0.8px #8c5d13;
+      filter: drop-shadow(0 4px 3px #000);
+      white-space: nowrap;
+      margin-top: -4px;
+    }
+
+    .details {
+      display: flex;
+      align-items: center;
+      gap: clamp(6px, 2.5vw, 20px);
+      width: 68%;
+      margin-top: 0px;
+    }
+
+    .details::before,
+    .details::after {
+      content: "";
+      height: 1.5px;
+      flex: 1;
+      background: #e4ae3c;
+      box-shadow: 0 0 5px rgba(229, 174, 60, .25);
+    }
+
+    .details span {
+      font-size: clamp(18px, 5.5vw, 42px);
+      font-weight: 500;
+      letter-spacing: .18em;
+      white-space: nowrap;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: clamp(11px, 2.6vw, 20px);
+      line-height: 1.35;
+      letter-spacing: .1em;
+      color: #f2f2f2;
+      margin-top: 2px;
+    }
+
+    .mini-line {
+      width: 34%;
+      height: 1px;
+      background: #b78325;
+      margin-top: 10px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .mini-line::after {
+      content: "◆";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: #e3ad3c;
+      font-size: 10px;
+      background: #07111b;
+      padding: 0 6px;
+    }
+
+    /* ---------- payment rows ---------- */
+    .rows {
+      width: 100%;
+      margin-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .payment-row {
+      width: 100%;
+      min-height: 82px;
+      display: flex;
+      align-items: stretch;
+      position: relative;
+      filter: drop-shadow(0 6px 6px rgba(0, 0, 0, .55));
+    }
+
+    .row-label {
+      width: 28%;
+      flex-shrink: 0;
+      border: 1.5px solid #c99327;
+      border-right: 0;
+      border-radius: 18px 0 0 18px;
+      background: linear-gradient(135deg, #07111b, #02070c);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      padding: 4px 2px;
+    }
+
+    .row-label::before {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-radius: 15px 0 0 15px;
+      border: 1px solid rgba(231, 178, 66, .12);
+      pointer-events: none;
+    }
+
+    .label-icon {
+      width: 26px;
+      max-width: 28%;
+      aspect-ratio: 1;
+      margin-bottom: 2px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    /* bank icon */
+    .bank-icon::before {
+      content: "";
+      position: absolute;
+      left: 7%;
+      top: 12%;
+      width: 86%;
+      height: 18%;
+      background: #e8b544;
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      filter: drop-shadow(0 1px 2px #000);
+    }
+
+    .bank-icon::after {
+      content: "";
+      position: absolute;
+      left: 14%;
+      bottom: 13%;
+      width: 72%;
+      height: 12%;
+      background: #e8b544;
+      box-shadow: 0 -18px 0 -3px #e8b544, 0 -36px 0 -5px #e8b544;
+    }
+
+    /* person icon */
+    .person-icon::before {
+      content: "";
+      position: absolute;
+      width: 38%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: #edbd51;
+      left: 31%;
+      top: 4%;
+      box-shadow: 0 1px 3px #000;
+    }
+
+    .person-icon::after {
+      content: "";
+      position: absolute;
+      width: 72%;
+      height: 47%;
+      left: 14%;
+      bottom: 3%;
+      border-radius: 50% 50% 8% 8%;
+      background: #edbd51;
+      box-shadow: 0 1px 3px #000;
+    }
+
+    .label-text {
+      font-size: clamp(9px, 2.4vw, 18px);
+      font-weight: 700;
+      color: #eabb4d;
+      text-align: center;
+      line-height: 1.15;
+      position: relative;
+      z-index: 2;
+    }
+
+    .label-text.small {
+      max-width: 90%;
+    }
+
+    /* right value panel */
+    .row-value {
+      flex: 1;
+      min-width: 0;
+      margin-left: -1px;
+      border: 1.5px solid #c99327;
+      border-left: 0;
+      border-radius: 0 18px 18px 0;
+      background:
+        repeating-linear-gradient(135deg, rgba(30, 30, 30, .02) 0, rgba(30, 30, 30, .02) 2px, transparent 2px, transparent 5px),
+        linear-gradient(135deg, #fffefa, #e9e9e6 55%, #fffefa);
+      color: #071527;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      padding: 4px 8px;
+      overflow: hidden;
+    }
+
+    .value-title {
+      max-width: 92%;
+      text-align: center;
+      font-size: clamp(9px, 2.4vw, 22px);
+      letter-spacing: .06em;
+      font-weight: 500;
+      margin-bottom: 0px;
+      position: relative;
+      line-height: 1.15;
+      white-space: nowrap;
+    }
+
+    .value-title::after {
+      content: "";
+      position: absolute;
+      height: 1.5px;
+      width: 50%;
+      left: 25%;
+      bottom: -4px;
+      background: #b88723;
+    }
+
+    .value-number {
+      max-width: 94%;
+      text-align: center;
+      font-size: clamp(26px, 8.5vw, 68px);
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .01em;
+      color: #061526;
+      text-shadow: 1.5px 2px 0 #d6d6d1, 0 4px 4px rgba(0, 0, 0, .2);
+      white-space: nowrap;
+      margin-top: 4px;
+    }
+
+    /* arrow */
+    .arrow {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10%;
+      min-width: 20px;
+      height: 40%;
+      border-radius: 10px 0 0 10px;
+      background: linear-gradient(#fff1ad, #dba632 50%, #a86c0d);
+      border: 1.5px solid #9b690f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #081321;
+      font-size: clamp(18px, 4.5vw, 34px);
+      font-weight: bold;
+      box-shadow: -3px 3px 6px rgba(0, 0, 0, .35);
+      z-index: 3;
+    }
+
+    /* ---------- trust strip ---------- */
+    .trust-strip {
+      width: 100%;
+      min-height: 60px;
+      margin-top: 14px;
+      border: 1px solid #b9801c;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #06101a, #02070c);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .trust-item {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 2px;
+      padding: 4px 2px;
+      min-width: 0;
+    }
+
+    .trust-item:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 18%;
+      height: 64%;
+      width: 1px;
+      background: #dca936;
+    }
+
+    .trust-icon {
+      width: 22px;
+      max-width: 28%;
+      aspect-ratio: 1;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .shield {
+      border: 1.5px solid #e7b441;
+      border-radius: 8px 8px 30% 30%;
+      clip-path: polygon(50% 0, 95% 16%, 87% 70%, 50% 100%, 13% 70%, 5% 16%);
+    }
+
+    .shield::after {
+      content: "✓";
+      color: #e7b441;
+      font-size: clamp(11px, 2.5vw, 20px);
+      font-weight: bold;
+      position: absolute;
+      left: 50%;
+      top: 38%;
+      transform: translate(-50%, -50%);
+    }
+
+    .clock {
+      border: 1.5px solid #e7b441;
+      border-radius: 50%;
+    }
+
+    .clock::before {
+      content: "";
+      position: absolute;
+      width: 1.5px;
+      height: 32%;
+      background: #e7b441;
+      left: 50%;
+      top: 18%;
+      transform-origin: bottom;
+    }
+
+    .clock::after {
+      content: "";
+      position: absolute;
+      width: 28%;
+      height: 1.5px;
+      background: #e7b441;
+      left: 50%;
+      top: 50%;
+      transform-origin: left;
+    }
+
+    .badge {
+      border: 1.5px solid #e7b441;
+      border-radius: 50%;
+    }
+
+    .badge::after {
+      content: "✓";
+      color: #e7b441;
+      font-size: clamp(11px, 2.5vw, 20px);
+      font-weight: bold;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -55%);
+    }
+
+    .mini-lock {
+      border: 1.5px solid #e7b441;
+      border-radius: 3px;
+      width: 36%;
+      height: 36%;
+      margin-top: 8%;
+    }
+
+    .mini-lock::before {
+      content: "";
+      position: absolute;
+      width: 50%;
+      height: 60%;
+      left: 25%;
+      top: -48%;
+      border: 1.5px solid #e7b441;
+      border-bottom: 0;
+      border-radius: 50% 50% 0 0;
+    }
+
+    .trust-text {
+      width: 96%;
+      font-size: clamp(6px, 1.5vw, 11px);
+      letter-spacing: .02em;
+      line-height: 1.15;
+      font-weight: 500;
+    }
+
+    /* ---------- thank you ---------- */
+    .thank-you {
+      margin-top: 12px;
+      font-family: "Brush Script MT", "Segoe Script", cursive;
+      font-size: clamp(26px, 6.5vw, 48px);
+      color: #e6b33e;
+      line-height: 1;
+      text-shadow: 0 2px 2px #000;
+      white-space: nowrap;
+    }
+
+    .appreciated {
+      margin-top: 4px;
+      width: 78%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+      color: #f1f1f1;
+      font-size: clamp(7px, 1.8vw, 14px);
+      letter-spacing: .06em;
+      white-space: nowrap;
+    }
+
+    .appreciated::before,
+    .appreciated::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #d49c2b;
+    }
+
+    /* ---------- bottom accent ---------- */
+    .bottom-accent {
+      position: absolute;
+      left: 8%;
+      right: 8%;
+      bottom: 14px;
+      height: 4px;
+      border-bottom: 2px solid #d49b28;
+      border-radius: 0 0 50% 50%;
+      box-shadow: 0 4px 8px rgba(221, 162, 44, .2);
+      z-index: 4;
+    }
+
+    .bottom-star {
+      position: absolute;
+      left: 50%;
+      bottom: 6px;
+      transform: translateX(-50%);
+      width: 20px;
+      height: 20px;
+      z-index: 5;
+    }
+
+    .bottom-star::before,
+    .bottom-star::after {
+      content: "";
+      position: absolute;
+      background: #f3c34e;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .bottom-star::before {
+      width: 100%;
+      height: 1.5px;
+    }
+
+    .bottom-star::after {
+      width: 1.5px;
+      height: 100%;
+    }
+
+    /* ---------- extra small screens ---------- */
+    @media (max-width: 380px) {
+      body {
+        padding: 6px;
+      }
+
+      .payment-card {
+        padding: 12px 8px 16px;
+        border-radius: 24px;
+      }
+
+      .payment-card::before {
+        inset: 4px;
+        border-radius: 20px;
+      }
+
+      .payment-card::after {
+        inset: 8px;
+        border-radius: 16px;
+      }
+
+      .back-btn {
+        top: 14px;
+        left: 14px;
+        padding: 4px 10px 4px 8px;
+        font-size: 10px;
+        border-radius: 30px;
+      }
+
+      .back-btn svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .lock-wrap {
+        width: 44px;
+      }
+
+      .corner-gold {
+        width: 14%;
+        height: 1.5px;
+      }
+
+      .corner-gold.top-left {
+        top: 10px;
+        left: 12px;
+      }
+
+      .corner-gold.top-right {
+        top: 10px;
+        right: 12px;
+      }
+
+      .corner-gold.bottom-left {
+        bottom: 10px;
+        left: 12px;
+      }
+
+      .corner-gold.bottom-right {
+        bottom: 10px;
+        right: 12px;
+      }
+
+      .secure {
+        font-size: 24px;
+      }
+
+      .payment {
+        font-size: 38px;
+      }
+
+      .details span {
+        font-size: 16px;
+        letter-spacing: .12em;
+      }
+
+      .subtitle {
+        font-size: 10px;
+      }
+
+      .rows {
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .payment-row {
+        min-height: 70px;
+      }
+
+      .row-label {
+        width: 30%;
+        border-radius: 14px 0 0 14px;
+      }
+
+      .row-value {
+        border-radius: 0 14px 14px 0;
+      }
+
+      .row-label::before {
+        border-radius: 11px 0 0 11px;
+      }
+
+      .label-icon {
+        width: 20px;
+      }
+
+      .label-text {
+        font-size: 8px;
+      }
+
+      .value-title {
+        font-size: 8px;
+      }
+
+      .value-number {
+        font-size: 22px;
+        margin-top: 2px;
+      }
+
+      .arrow {
+        min-width: 16px;
+        font-size: 16px;
+        height: 36%;
+      }
+
+      .trust-strip {
+        min-height: 50px;
+        margin-top: 10px;
+        border-radius: 10px;
+      }
+
+      .trust-icon {
+        width: 18px;
+      }
+
+      .trust-text {
+        font-size: 5px;
+      }
+
+      .thank-you {
+        font-size: 22px;
+        margin-top: 8px;
+      }
+
+      .appreciated {
+        font-size: 6px;
+        width: 88%;
+        gap: 4px;
+      }
+
+      .bottom-accent {
+        bottom: 10px;
+        height: 3px;
+        border-bottom-width: 1.5px;
+      }
+
+      .bottom-star {
+        width: 16px;
+        height: 16px;
+        bottom: 4px;
+      }
+    }
+
+    /* ---------- landscape safety ---------- */
+    @media (max-height: 600px) and (orientation: landscape) {
+      .payment-card {
+        max-width: 420px;
+        padding: 12px 14px 16px;
+      }
+
+      .back-btn {
+        top: 12px;
+        left: 14px;
+        padding: 4px 10px 4px 8px;
+        font-size: 11px;
+      }
+
+      .back-btn svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      .lock-wrap {
+        width: 40px;
+      }
+
+      .secure {
+        font-size: 24px;
+      }
+
+      .payment {
+        font-size: 38px;
+      }
+
+      .details span {
+        font-size: 16px;
+      }
+
+      .subtitle {
+        font-size: 10px;
+      }
+
+      .rows {
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      .payment-row {
+        min-height: 64px;
+      }
+
+      .value-number {
+        font-size: 22px;
+      }
+
+      .trust-strip {
+        min-height: 44px;
+        margin-top: 8px;
+      }
+
+      .trust-text {
+        font-size: 5.5px;
+      }
+
+      .thank-you {
+        font-size: 20px;
+        margin-top: 6px;
+      }
+
+      .appreciated {
+        font-size: 6.5px;
+      }
+
+      .bottom-accent {
+        bottom: 8px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="payment-card">
+    <!-- side patterns -->
+    <div class="side-pattern left"></div>
+    <div class="side-pattern right"></div>
+
+    <!-- corner accents -->
+    <div class="corner-gold top-left"></div>
+    <div class="corner-gold top-right"></div>
+    <div class="corner-gold bottom-left"></div>
+    <div class="corner-gold bottom-right"></div>
+
+    <!-- PREMIUM BACK BUTTON -->
+    <a href="#" class="back-btn" onclick="history.back(); return false;" aria-label="Go back">
+      <svg viewBox="0 0 24 24">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+      <span class="label">Back</span>
+    </a>
+
+    <main class="content">
+      <!-- lock -->
+      <div class="lock-wrap">
+        <div class="lock"></div>
+      </div>
+
+      <!-- ornament -->
+      <div class="ornament">
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+
+      <div class="secure">Secure</div>
+      <div class="payment">PAYMENT</div>
+
+      <div class="details">
+        <span>DETAILS</span>
+      </div>
+
+      <div class="subtitle">
+        Kindly use the details below<br>
+        to make your payment
+      </div>
+
+      <div class="mini-line"></div>
+
+      <!-- payment rows -->
+      <section class="rows">
+        <!-- row 1: paybill -->
+        <div class="payment-row">
+          <div class="row-label">
+            <div class="label-icon bank-icon"></div>
+            <div class="label-text">PAYBILL</div>
+          </div>
+          <div class="row-value">
+            <div class="value-title">PAYBILL NUMBER</div>
+            <div class="value-number">541400</div>
+            <div class="arrow">›</div>
+          </div>
+        </div>
+
+        <!-- row 2: account number -->
+        <div class="payment-row">
+          <div class="row-label">
+            <div class="label-icon person-icon"></div>
+            <div class="label-text small">ACCOUNT<br>NUMBER</div>
+          </div>
+          <div class="row-value">
+            <div class="value-title">ACCOUNT NUMBER</div>
+            <div class="value-number">103369283</div>
+            <div class="arrow">›</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- trust strip -->
+      <section class="trust-strip">
+        <div class="trust-item">
+          <div class="trust-icon shield"></div>
+          <div class="trust-text">SAFE &amp; SECURE</div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon clock"></div>
+          <div class="trust-text">FAST &amp; RELIABLE</div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon badge"></div>
+          <div class="trust-text">TRUSTED &amp; VERIFIED</div>
+        </div>
+        <div class="trust-item">
+          <div class="trust-icon mini-lock"></div>
+          <div class="trust-text">YOUR SECURITY<br>IS OUR PRIORITY</div>
+        </div>
+      </section>
+
+      <!-- thank you -->
+      <div class="thank-you">Thank You!</div>
+      <div class="appreciated">YOUR PAYMENT IS APPRECIATED</div>
+    </main>
+
+    <!-- bottom accents -->
+    <div class="bottom-accent"></div>
+    <div class="bottom-star"></div>
+  </div>
+</body>
+</html>

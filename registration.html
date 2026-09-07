@@ -1,0 +1,3082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#0f172a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="storage-access-api" content="true">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
+    <title>Difathar Soccer Academy Registration</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* ============================================
+           PERFECT READABILITY - MOBILE & DESKTOP
+           ============================================ */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #3b82f6;
+            --secondary: #0f172a;
+            --surface: #1e293b;
+            --surface-light: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 4px 24px rgba(0,0,0,0.3);
+            --shadow-lg: 0 8px 48px rgba(0,0,0,0.4);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            --text-xs: clamp(10px, 1.2vw, 12px);
+            --text-sm: clamp(12px, 1.5vw, 14px);
+            --text-base: clamp(14px, 1.8vw, 16px);
+            --text-lg: clamp(16px, 2.2vw, 20px);
+            --text-xl: clamp(20px, 3vw, 28px);
+            --text-2xl: clamp(28px, 4vw, 40px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            font-size: 16px;
+            -webkit-text-size-adjust: 100%;
+            -moz-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+            scroll-behavior: smooth;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100dvh;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+            font-family: var(--font);
+            color: var(--text-primary);
+            background: var(--secondary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .football-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--surface) 50%, var(--secondary) 100%);
+            overflow: hidden;
+            will-change: transform;
+        }
+
+        .football-bg::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(37, 99, 235, 0.06), transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(99, 102, 241, 0.06), transparent 50%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .button-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: clamp(12px, 2vw, 24px);
+            z-index: 10;
+            animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 20px;
+            width: min(100%, 500px);
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translate(-50%, -30%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+        .open-modal-btn {
+            width: 100%;
+            padding: clamp(16px, 2.5vw, 24px) clamp(24px, 4vw, 48px);
+            font-family: var(--font);
+            font-size: var(--text-lg);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: var(--primary);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+            transition: var(--transition);
+            transform: translateY(0);
+            touch-action: manipulation;
+            min-height: clamp(56px, 7vw, 64px);
+            -webkit-touch-callout: none;
+            user-select: none;
+        }
+
+        .open-modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(37, 99, 235, 0.5);
+            background: var(--primary-dark);
+        }
+
+        .open-modal-btn:active {
+            transform: scale(0.98);
+        }
+
+        .open-modal-btn i {
+            font-size: var(--text-xl);
+            flex-shrink: 0;
+        }
+
+        .back-button {
+            width: 100%;
+            padding: clamp(12px, 1.5vw, 18px) clamp(20px, 3vw, 36px);
+            font-family: var(--font);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: var(--transition);
+            touch-action: manipulation;
+            min-height: clamp(48px, 6vw, 56px);
+            user-select: none;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .back-button:active {
+            transform: scale(0.98);
+        }
+
+        .back-button i {
+            font-size: var(--text-base);
+            flex-shrink: 0;
+        }
+
+        .registration-modal {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 99999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(8px, 2vw, 20px);
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            animation: modalFadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            overscroll-behavior: contain;
+        }
+
+        .registration-modal.active {
+            display: flex;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .registration-box {
+            width: min(100%, 960px);
+            max-height: 98vh;
+            max-height: 98dvh;
+            overflow-y: auto;
+            border-radius: var(--radius);
+            background: #ffffff;
+            box-shadow: var(--shadow-lg);
+            animation: boxAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @keyframes boxAppear {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .registration-box::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .registration-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .registration-box::-webkit-scrollbar-thumb {
+            background: var(--surface-light);
+            border-radius: 10px;
+        }
+
+        .registration-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            min-height: clamp(56px, 7vw, 68px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: clamp(10px, 1.5vw, 18px) clamp(16px, 2.5vw, 28px);
+            color: #fff;
+            background: var(--surface);
+            border-radius: var(--radius) var(--radius) 0 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .registration-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: var(--text-lg);
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            min-width: 0;
+        }
+
+        .registration-title-icon {
+            width: clamp(36px, 4vw, 44px);
+            height: clamp(36px, 4vw, 44px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: rgba(37, 99, 235, 0.2);
+            font-size: var(--text-base);
+            color: var(--primary-light);
+        }
+
+        .registration-title span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-size: var(--text-base);
+        }
+
+        .close-button {
+            width: clamp(36px, 4vw, 44px);
+            height: clamp(36px, 4vw, 44px);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 50%;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            font-size: var(--text-xl);
+            transition: var(--transition);
+            touch-action: manipulation;
+        }
+
+        .close-button:hover {
+            background: var(--danger);
+            color: #fff;
+            transform: rotate(90deg);
+        }
+
+        .close-button:active {
+            transform: scale(0.85);
+        }
+
+        .registration-form {
+            padding: clamp(16px, 2.5vw, 32px) clamp(14px, 2.5vw, 32px) clamp(18px, 2.5vw, 32px);
+        }
+
+        .form-section {
+            margin-bottom: clamp(20px, 3vw, 32px);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            color: var(--surface);
+            font-size: var(--text-base);
+            font-weight: 700;
+            border-bottom: 2px solid #e2e8f0;
+            letter-spacing: 0.2px;
+        }
+
+        .section-title i {
+            color: var(--primary);
+            font-size: var(--text-base);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(12px, 1.5vw, 20px);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .form-group label {
+            margin-bottom: 4px;
+            color: var(--surface);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            letter-spacing: 0.2px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .required {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            outline: none;
+            border: 1.5px solid #e2e8f0;
+            border-radius: var(--radius-sm);
+            background: #fff;
+            color: var(--surface);
+            font-family: var(--font);
+            font-size: var(--text-base);
+            transition: var(--transition);
+            position: relative;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .form-group input,
+        .form-group select {
+            height: clamp(44px, 5vw, 52px);
+            padding: 0 clamp(12px, 1.5vw, 18px);
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            padding: 10px 14px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+            background: #fff;
+        }
+
+        .form-group input.valid,
+        .form-group select.valid,
+        .form-group textarea.valid {
+            border-color: var(--success);
+            background: #f0fdf4;
+        }
+
+        .form-group input.invalid,
+        .form-group select.invalid,
+        .form-group textarea.invalid {
+            border-color: var(--danger);
+            background: #fef2f2;
+        }
+
+        .form-group select:disabled {
+            background: #f1f5f9;
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .form-group .field-hint {
+            font-size: var(--text-xs);
+            color: var(--text-muted);
+            margin-top: 3px;
+            display: none;
+        }
+
+        .form-group .field-hint.show {
+            display: block;
+        }
+
+        .parent-toggle {
+            cursor: pointer;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: var(--text-sm);
+            padding: clamp(8px, 1vw, 12px) clamp(14px, 1.5vw, 20px);
+            border: 1.5px solid var(--primary);
+            border-radius: var(--radius-sm);
+            transition: var(--transition);
+            background: transparent;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            touch-action: manipulation;
+            user-select: none;
+            font-family: var(--font);
+        }
+
+        .parent-toggle:hover {
+            background: var(--primary);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .parent-toggle.active {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .parent-toggle:active {
+            transform: scale(0.96);
+        }
+
+        .parent-section {
+            display: none;
+            margin-top: 14px;
+        }
+
+        .parent-section.active {
+            display: block;
+            animation: slideDown 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .location-note {
+            margin-top: 12px;
+            padding: clamp(10px, 1vw, 14px) clamp(14px, 1.5vw, 18px);
+            color: var(--text-muted);
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-sm);
+            font-size: var(--text-sm);
+            font-weight: 500;
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        .location-note i {
+            margin-right: 8px;
+            color: var(--primary);
+        }
+
+        .location-note.error {
+            color: #991b1b;
+            background: #fef2f2;
+            border-color: #fca5a5;
+        }
+
+        .location-note.success {
+            color: #166534;
+            background: #f0fdf4;
+            border-color: #86efac;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(37, 99, 235, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .agreement {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-top: 4px;
+            padding: clamp(12px, 1.5vw, 16px) clamp(14px, 1.5vw, 18px);
+            color: var(--surface);
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: var(--radius-sm);
+            font-size: var(--text-sm);
+            font-weight: 500;
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        .agreement.error {
+            border-color: var(--danger);
+            background: #fef2f2;
+        }
+
+        .agreement input {
+            width: clamp(18px, 2vw, 20px);
+            height: clamp(18px, 2vw, 20px);
+            flex-shrink: 0;
+            margin-top: 2px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .agreement label {
+            cursor: pointer;
+        }
+
+        .submit-area {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: clamp(18px, 2vw, 28px);
+            padding-top: clamp(16px, 1.5vw, 22px);
+            border-top: 1px solid #e2e8f0;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .submit-button {
+            min-width: clamp(200px, 25vw, 260px);
+            min-height: clamp(48px, 5vw, 56px);
+            padding: clamp(12px, 1.5vw, 16px) clamp(24px, 3vw, 36px);
+            border: none;
+            border-radius: var(--radius);
+            color: #fff;
+            background: var(--primary);
+            cursor: pointer;
+            font-family: var(--font);
+            font-size: var(--text-base);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-shrink: 0;
+            touch-action: manipulation;
+            user-select: none;
+            width: 100%;
+        }
+
+        .submit-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(37, 99, 235, 0.4);
+            background: var(--primary-dark);
+        }
+
+        .submit-button:active:not(:disabled) {
+            transform: scale(0.97);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-button .button-status {
+            font-size: var(--text-xs);
+            font-weight: 500;
+            opacity: 0.7;
+        }
+
+        .message {
+            display: none;
+            margin-top: 14px;
+            padding: clamp(12px, 1vw, 16px) clamp(14px, 1.5vw, 18px);
+            border-radius: var(--radius-sm);
+            font-size: var(--text-sm);
+            font-weight: 600;
+        }
+
+        .success-message {
+            color: #166534;
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+        }
+
+        .error-message {
+            color: #991b1b;
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+        }
+
+        .validation-summary {
+            display: none;
+            padding: clamp(12px, 1vw, 16px) clamp(14px, 1.5vw, 18px);
+            background: #fef2f2;
+            border: 1px solid var(--danger);
+            border-radius: var(--radius-sm);
+            margin-top: 14px;
+            font-size: var(--text-sm);
+            font-weight: 600;
+            color: #991b1b;
+        }
+
+        .validation-summary.show {
+            display: block;
+        }
+
+        .validation-summary ul {
+            list-style: none;
+            margin-top: 6px;
+            padding-left: 0;
+        }
+
+        .validation-summary ul li {
+            padding: 3px 0;
+            font-weight: 500;
+            font-size: var(--text-sm);
+        }
+
+        .validation-summary ul li i {
+            margin-right: 8px;
+        }
+
+        .retry-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 6px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: var(--text-xs);
+            transition: var(--transition);
+            font-family: var(--font);
+        }
+
+        .retry-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .button-container.hidden {
+            display: none;
+        }
+
+        .login-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius);
+            padding: clamp(14px, 1.5vw, 22px) clamp(14px, 2vw, 24px);
+            margin-bottom: clamp(18px, 2vw, 28px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: clamp(12px, 1.5vw, 18px);
+            flex-wrap: wrap;
+        }
+
+        .login-section .login-text {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--surface);
+            min-width: 0;
+        }
+
+        .login-section .login-text i {
+            font-size: var(--text-xl);
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .login-section .login-text div {
+            min-width: 0;
+        }
+
+        .login-section .login-text h3 {
+            font-size: var(--text-base);
+            font-weight: 700;
+        }
+
+        .login-section .login-text p {
+            font-size: var(--text-sm);
+            color: var(--text-muted);
+        }
+
+        .login-input-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .login-input-group input {
+            flex: 1;
+            min-width: 140px;
+            height: clamp(42px, 4.5vw, 48px);
+            border: 1.5px solid #e2e8f0;
+            border-radius: var(--radius-sm);
+            padding: 0 clamp(12px, 1.5vw, 16px);
+            font-size: var(--text-base);
+            outline: none;
+            transition: var(--transition);
+            font-family: var(--font);
+            background: #fff;
+            color: var(--surface);
+        }
+
+        .login-input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .login-btn {
+            padding: clamp(10px, 1vw, 14px) clamp(18px, 2vw, 28px);
+            border: none;
+            border-radius: var(--radius-sm);
+            background: var(--primary);
+            color: #fff;
+            font-weight: 600;
+            font-size: var(--text-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+            min-height: clamp(42px, 4.5vw, 48px);
+            font-family: var(--font);
+            touch-action: manipulation;
+            white-space: nowrap;
+        }
+
+        .login-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .login-btn:active {
+            transform: scale(0.96);
+        }
+
+        .login-btn i {
+            margin-right: 6px;
+        }
+
+        .login-result {
+            display: none;
+            padding: clamp(10px, 1vw, 14px) clamp(14px, 1.5vw, 18px);
+            border-radius: var(--radius-sm);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .login-result.success {
+            display: block;
+            background: #f0fdf4;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .login-result.error {
+            display: block;
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .login-result.info {
+            display: block;
+            background: #eff6ff;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+
+        .login-result .action-link {
+            color: var(--primary);
+            font-weight: 700;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .login-result .action-link:hover {
+            color: var(--primary-dark);
+        }
+
+        .celebration {
+            position: fixed;
+            inset: 0;
+            z-index: 1000000;
+            display: none;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .celebration.active {
+            display: block;
+            pointer-events: auto;
+        }
+
+        .celebration-card {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: min(90%, 460px);
+            padding: clamp(28px, 3vw, 36px) clamp(24px, 2.5vw, 32px);
+            text-align: center;
+            color: #fff;
+            border-radius: var(--radius);
+            background: var(--surface);
+            box-shadow: var(--shadow-lg);
+            transform: translate(-50%, -50%) scale(0.9);
+            animation: celebrationCard 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        @keyframes celebrationCard {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .celebration-card .icon-row {
+            font-size: var(--text-2xl);
+            margin-bottom: 10px;
+        }
+
+        .celebration-card .icon-row i {
+            margin: 0 6px;
+            color: var(--primary-light);
+        }
+
+        .celebration-card h1 {
+            font-size: var(--text-xl);
+            font-weight: 800;
+            margin: 6px 0;
+            letter-spacing: 0.3px;
+        }
+
+        .celebration-card .sub-text {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 6px;
+        }
+
+        .celebration-card .detail-row {
+            display: flex;
+            justify-content: center;
+            gap: clamp(12px, 1.5vw, 24px);
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .celebration-card .detail-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-sm);
+            padding: 8px 18px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .celebration-card .detail-item .label {
+            font-size: var(--text-xs);
+            text-transform: uppercase;
+            opacity: 0.5;
+            letter-spacing: 0.8px;
+            font-weight: 700;
+        }
+
+        .celebration-card .detail-item .value {
+            font-size: var(--text-base);
+            font-weight: 700;
+            display: block;
+            margin-top: 2px;
+            color: var(--primary-light);
+        }
+
+        .celebration-card .btn-close-celebration {
+            margin-top: 14px;
+            padding: clamp(10px, 1vw, 14px) clamp(24px, 2vw, 32px);
+            border: none;
+            border-radius: var(--radius-sm);
+            background: var(--primary);
+            color: #fff;
+            font-weight: 700;
+            font-size: var(--text-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: var(--font);
+            touch-action: manipulation;
+        }
+
+        .celebration-card .btn-close-celebration:hover {
+            background: var(--primary-dark);
+            transform: scale(1.02);
+        }
+
+        .celebration-card .btn-close-celebration:active {
+            transform: scale(0.97);
+        }
+
+        .bottom-right-buttons {
+            position: fixed;
+            bottom: clamp(12px, 2vw, 24px);
+            right: clamp(12px, 2vw, 24px);
+            z-index: 999998;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .admin-access-btn {
+            width: clamp(48px, 5vw, 56px);
+            height: clamp(48px, 5vw, 56px);
+            border-radius: 50%;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            background: rgba(37, 99, 235, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: var(--primary-light);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--text-xl);
+            transition: var(--transition);
+            box-shadow: 0 2px 16px rgba(37, 99, 235, 0.2);
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+            -webkit-touch-callout: none;
+            position: relative;
+        }
+
+        .admin-access-btn:hover {
+            border-color: rgba(59, 130, 246, 0.6);
+            color: #fff;
+            background: rgba(37, 99, 235, 0.3);
+            transform: scale(1.05);
+        }
+
+        .admin-access-btn:active {
+            transform: scale(0.95);
+        }
+
+        .admin-access-btn .admin-tooltip {
+            position: absolute;
+            bottom: calc(100% + 12px);
+            right: 0;
+            background: var(--surface);
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: var(--text-xs);
+            font-weight: 600;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.05);
+            font-family: var(--font);
+            box-shadow: var(--shadow);
+        }
+
+        .admin-access-btn:hover .admin-tooltip {
+            opacity: 1;
+        }
+
+        .admin-access-btn .admin-status-dot {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #22c55e;
+            border: 2px solid var(--secondary);
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.3); opacity: 0.7; }
+        }
+
+        .admin-panel-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: clamp(12px, 2vw, 24px);
+        }
+
+        .admin-panel-overlay.active {
+            display: flex;
+        }
+
+        .admin-panel {
+            width: min(100%, 720px);
+            max-height: 94vh;
+            max-height: 94dvh;
+            overflow-y: auto;
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: clamp(24px, 3vw, 36px);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid rgba(255,255,255,0.05);
+            animation: boxAppear 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .admin-panel::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .admin-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .admin-panel::-webkit-scrollbar-thumb {
+            background: var(--surface-light);
+            border-radius: 10px;
+        }
+
+        .admin-panel h2 {
+            font-size: var(--text-xl);
+            font-weight: 800;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-panel h2 i {
+            color: var(--primary-light);
+        }
+
+        .admin-panel .admin-sub {
+            font-size: var(--text-sm);
+            color: var(--text-secondary);
+            margin-bottom: clamp(18px, 2vw, 28px);
+        }
+
+        .admin-panel .admin-field {
+            margin-bottom: clamp(14px, 1.5vw, 18px);
+        }
+
+        .admin-panel .admin-field label {
+            display: block;
+            font-size: var(--text-xs);
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .admin-panel .admin-field input,
+        .admin-panel .admin-field textarea,
+        .admin-panel .admin-field select {
+            width: 100%;
+            padding: clamp(10px, 1vw, 14px) clamp(14px, 1.5vw, 18px);
+            border: 1.5px solid var(--surface-light);
+            border-radius: var(--radius-sm);
+            background: var(--secondary);
+            color: var(--text-primary);
+            font-family: var(--font);
+            font-size: var(--text-base);
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .admin-panel .admin-field input:focus,
+        .admin-panel .admin-field textarea:focus,
+        .admin-panel .admin-field select:focus {
+            border-color: var(--primary-light);
+        }
+
+        .admin-panel .admin-field textarea {
+            min-height: 60px;
+            resize: vertical;
+        }
+
+        .admin-panel .admin-field .admin-hint {
+            font-size: var(--text-xs);
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .admin-panel .admin-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: clamp(18px, 2vw, 28px);
+            padding-top: clamp(16px, 1.5vw, 22px);
+            border-top: 1px solid var(--surface-light);
+            flex-wrap: wrap;
+        }
+
+        .admin-panel .admin-actions button {
+            padding: clamp(10px, 1vw, 14px) clamp(18px, 2vw, 28px);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 700;
+            font-size: var(--text-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: var(--font);
+            flex: 1;
+            min-width: 100px;
+            min-height: 44px;
+            touch-action: manipulation;
+            user-select: none;
+        }
+
+        .admin-panel .admin-actions .admin-save {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .admin-panel .admin-actions .admin-save:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .admin-panel .admin-actions .admin-close {
+            background: var(--surface-light);
+            color: #fff;
+        }
+
+        .admin-panel .admin-actions .admin-close:hover {
+            background: #475569;
+        }
+
+        .admin-panel .admin-actions .admin-reset {
+            background: transparent;
+            color: var(--danger);
+            border: 1.5px solid var(--danger);
+        }
+
+        .admin-panel .admin-actions .admin-reset:hover {
+            background: var(--danger);
+            color: #fff;
+        }
+
+        .admin-panel .admin-status {
+            margin-top: 14px;
+            padding: clamp(10px, 1vw, 14px) clamp(14px, 1.5vw, 18px);
+            border-radius: var(--radius-sm);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            display: none;
+        }
+
+        .admin-panel .admin-status.success {
+            display: block;
+            background: #064e3b;
+            color: #86efac;
+            border: 1px solid var(--success);
+        }
+
+        .admin-panel .admin-status.error {
+            display: block;
+            background: #7f1d1d;
+            color: #fca5a5;
+            border: 1px solid var(--danger);
+        }
+
+        .toast-message {
+            position: fixed;
+            bottom: clamp(80px, 10vw, 120px);
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--surface);
+            color: var(--text-primary);
+            padding: clamp(12px, 1.5vw, 16px) clamp(18px, 2vw, 28px);
+            border-radius: var(--radius-sm);
+            font-family: var(--font);
+            font-size: var(--text-sm);
+            font-weight: 600;
+            z-index: 999999;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            pointer-events: none;
+            max-width: min(90vw, 500px);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .toast-message.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; gap: clamp(10px, 1.2vw, 14px); }
+            .registration-box { max-height: 96vh; max-height: 96dvh; border-radius: var(--radius-sm); margin: 4px; }
+            .registration-header { border-radius: var(--radius-sm) var(--radius-sm) 0 0; min-height: 52px; padding: clamp(8px, 1vw, 12px) clamp(12px, 1.5vw, 18px); }
+            .registration-form { padding: clamp(12px, 1.5vw, 18px) clamp(12px, 1.5vw, 18px) clamp(14px, 2vw, 22px); }
+            .login-section { flex-direction: column; align-items: stretch; padding: clamp(12px, 1.5vw, 16px); }
+            .login-input-group { flex-direction: column; width: 100%; min-width: unset; }
+            .login-input-group input { width: 100%; min-width: unset; font-size: 16px; }
+            .login-input-group .login-btn { width: 100%; }
+            .login-section .login-text { flex-direction: row; }
+            .submit-area { flex-direction: column; align-items: stretch; }
+            .submit-button { width: 100%; min-width: unset; font-size: var(--text-base); min-height: 50px; }
+            .admin-panel .admin-actions { flex-direction: column; }
+            .admin-panel .admin-actions button { width: 100%; flex: none; min-height: 48px; }
+            .admin-panel .admin-field input, .admin-panel .admin-field textarea { font-size: 16px; }
+            .form-group input, .form-group select, .form-group textarea { font-size: 16px; }
+            .admin-access-btn .admin-tooltip { display: none; }
+            .bottom-right-buttons { bottom: clamp(10px, 1.5vw, 18px); right: clamp(10px, 1.5vw, 18px); gap: 10px; }
+            .admin-access-btn { width: clamp(44px, 5vw, 50px); height: clamp(44px, 5vw, 50px); font-size: var(--text-base); }
+            .celebration-card { padding: clamp(18px, 2vw, 26px); width: min(92%, 420px); }
+            .celebration-card .detail-row { gap: 8px; }
+            .celebration-card .detail-item { padding: 6px 14px; }
+        }
+
+        @media (max-width: 480px) {
+            .open-modal-btn { font-size: var(--text-sm); padding: clamp(14px, 1.5vw, 18px) clamp(18px, 2vw, 24px); min-height: 50px; gap: 10px; }
+            .open-modal-btn i { font-size: var(--text-base); }
+            .back-button { font-size: var(--text-xs); padding: clamp(10px, 1vw, 14px) clamp(16px, 1.5vw, 20px); min-height: 44px; }
+            .registration-title { font-size: var(--text-sm); }
+            .registration-title-icon { width: clamp(28px, 3vw, 34px); height: clamp(28px, 3vw, 34px); font-size: var(--text-xs); }
+            .close-button { width: clamp(32px, 3.5vw, 38px); height: clamp(32px, 3.5vw, 38px); font-size: var(--text-base); }
+            .section-title { font-size: var(--text-sm); }
+            .form-group label { font-size: var(--text-xs); }
+            .form-group input, .form-group select { height: clamp(40px, 4vw, 44px); font-size: 16px; padding: 0 clamp(10px, 1vw, 14px); }
+            .form-group textarea { font-size: 16px; min-height: 60px; padding: 10px 12px; }
+            .registration-box { max-height: 95vh; max-height: 95dvh; border-radius: 8px; margin: 2px; }
+            .login-section .login-text h3 { font-size: var(--text-sm); }
+            .login-btn { font-size: var(--text-xs); min-height: 40px; padding: clamp(8px, 0.8vw, 12px) clamp(14px, 1.5vw, 18px); }
+            .submit-button { min-height: 48px; font-size: var(--text-sm); padding: clamp(10px, 1vw, 14px) clamp(18px, 2vw, 26px); }
+            .celebration-card { padding: 18px; }
+            .celebration-card h1 { font-size: var(--text-lg); }
+            .admin-panel { padding: clamp(16px, 2vw, 22px); max-height: 90vh; max-height: 90dvh; }
+            .admin-panel h2 { font-size: var(--text-lg); }
+            .admin-panel .admin-actions button { font-size: var(--text-sm); min-height: 44px; }
+            .toast-message { max-width: 92vw; font-size: var(--text-sm); padding: clamp(10px, 1vw, 14px) clamp(14px, 1.5vw, 18px); bottom: clamp(70px, 8vw, 90px); }
+        }
+
+        @media (max-width: 380px) {
+            .open-modal-btn { font-size: 12px; padding: 10px 14px; min-height: 44px; }
+            .registration-title { font-size: 11px; }
+            .registration-title-icon { width: 24px; height: 24px; font-size: 10px; }
+            .form-group input, .form-group select { height: 36px; font-size: 15px; padding: 0 8px; }
+            .form-group textarea { font-size: 15px; min-height: 50px; }
+            .celebration-card { padding: 14px; }
+            .celebration-card .detail-item { padding: 4px 10px; }
+            .celebration-card .detail-item .value { font-size: var(--text-sm); }
+            .login-btn { font-size: 10px; min-height: 36px; }
+            .submit-button { font-size: 11px; min-height: 42px; }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            .registration-box { max-height: 92vh; max-height: 92dvh; }
+            .registration-header { min-height: 44px; padding: 6px 12px; }
+            .registration-form { padding: 8px 12px 12px; }
+            .form-section { margin-bottom: 10px; }
+            .section-title { margin-bottom: 8px; padding-bottom: 4px; }
+            .form-grid { gap: 6px; }
+            .form-group input, .form-group select { height: 34px; font-size: 14px; }
+            .form-group textarea { min-height: 40px; }
+            .login-section { padding: 8px 12px; margin-bottom: 10px; }
+            .submit-area { margin-top: 10px; padding-top: 10px; }
+            .submit-button { min-height: 38px; font-size: var(--text-sm); }
+            .bottom-right-buttons { bottom: 6px; right: 6px; }
+            .admin-access-btn { width: 38px; height: 38px; font-size: 14px; }
+        }
+
+        @media (min-width: 769px) {
+            .registration-box { max-height: 98vh; border-radius: var(--radius); }
+            .registration-header { border-radius: var(--radius) var(--radius) 0 0; }
+            .form-grid { grid-template-columns: 1fr 1fr; }
+            .login-section { flex-direction: row; align-items: center; }
+            .login-input-group { flex-direction: row; }
+            .submit-area { flex-direction: row; justify-content: flex-end; }
+            .submit-button { width: auto; min-width: clamp(200px, 25vw, 260px); }
+            .admin-panel .admin-actions { flex-direction: row; }
+            .admin-access-btn .admin-tooltip { display: block; }
+        }
+
+        @supports (padding: max(0px)) {
+            .registration-box { padding-bottom: env(safe-area-inset-bottom); }
+            .bottom-right-buttons { bottom: max(12px, env(safe-area-inset-bottom)); right: max(12px, env(safe-area-inset-right)); }
+            .toast-message { bottom: max(80px, calc(env(safe-area-inset-bottom) + 60px)); }
+            .registration-modal { padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .registration-box { background: #fff; }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="football-bg" id="footballBg"></div>
+
+    <div class="button-container" id="buttonContainer">
+        <button class="open-modal-btn" id="openModalBtn">
+            <i class="fa-solid fa-futbol"></i>
+            Register at Difathar Soccer Academy
+        </button>
+        <button class="back-button" id="backButton">
+            <i class="fa-solid fa-arrow-left"></i>
+            Go Back
+        </button>
+    </div>
+
+    <div class="bottom-right-buttons">
+        <button class="admin-access-btn" id="adminAccessBtn" aria-label="Admin Settings">
+            <i class="fa-solid fa-sliders"></i>
+            <span class="admin-status-dot"></span>
+            <span class="admin-tooltip">Admin Access (Hold 20s)</span>
+        </button>
+    </div>
+
+    <div class="admin-panel-overlay" id="adminPanelOverlay">
+        <div class="admin-panel">
+            <h2><i class="fa-solid fa-sliders"></i> Academy Settings</h2>
+            <div class="admin-sub">Edit academy information fields below. Changes save automatically and update live.</div>
+            
+            <div class="admin-field">
+                <label>Academy Name</label>
+                <input type="text" id="adminAcademyName" value="Difathar Soccer Academy">
+            </div>
+
+            <div class="admin-field">
+                <label>Soccer Options (comma separated)</label>
+                <input type="text" id="adminSportOptions" value="Soccer, Swimming, Counseling &amp; Mentorship, Soccer Exchange, Team Building, Hiking, Other">
+                <div class="admin-hint">Separate each option with a comma</div>
+            </div>
+
+            <div class="admin-field">
+                <label>Join As Options (comma separated)</label>
+                <input type="text" id="adminJoinOptions" value="Player, Coach, Volunteer, Mentor, Staff, Other">
+                <div class="admin-hint">Separate each option with a comma</div>
+            </div>
+
+            <div class="admin-field">
+                <label>Experience Levels (comma separated)</label>
+                <input type="text" id="adminExperienceOptions" value="Beginner, Intermediate, Advanced">
+                <div class="admin-hint">Separate each option with a comma</div>
+            </div>
+
+            <div class="admin-field">
+                <label>Emergency Relationship Options (comma separated)</label>
+                <input type="text" id="adminEmergencyOptions" value="Parent, Guardian, Spouse, Sibling, Relative, Friend, Other">
+                <div class="admin-hint">Separate each option with a comma</div>
+            </div>
+
+            <div class="admin-field">
+                <label>Parent Relationship Options (comma separated)</label>
+                <input type="text" id="adminParentRelationOptions" value="Father, Mother, Guardian, Step Father, Step Mother, Grandparent, Aunt, Uncle, Older Sibling, Other">
+                <div class="admin-hint">Separate each option with a comma</div>
+            </div>
+
+            <div class="admin-field">
+                <label>Default Nationality</label>
+                <input type="text" id="adminDefaultNationality" value="Kenyan">
+            </div>
+
+            <div class="admin-field">
+                <label>Invoice Amount (KES)</label>
+                <input type="number" id="adminInvoiceAmount" value="1000">
+            </div>
+
+            <div class="admin-field">
+                <label>Invoice Programme Name</label>
+                <input type="text" id="adminInvoiceProgramme" value="Registration">
+            </div>
+
+            <div class="admin-status" id="adminStatus"></div>
+
+            <div class="admin-actions">
+                <button class="admin-save" id="adminSaveBtn"><i class="fa-solid fa-floppy-disk"></i> Save Settings</button>
+                <button class="admin-close" id="adminCloseBtn"><i class="fa-solid fa-xmark"></i> Close</button>
+                <button class="admin-reset" id="adminResetBtn"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="registration-modal" id="registrationModal">
+        <div class="registration-box">
+            <div class="registration-header">
+                <div class="registration-title">
+                    <div class="registration-title-icon">
+                        <i class="fa-solid fa-futbol"></i>
+                    </div>
+                    <span id="academyTitleDisplay">Difathar Soccer Academy</span>
+                </div>
+                <button type="button" class="close-button" id="closeButton" aria-label="Close">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form class="registration-form" id="registrationForm" novalidate autocomplete="off">
+                <div class="login-section">
+                    <div class="login-text">
+                        <i class="fa-solid fa-id-card"></i>
+                        <div>
+                            <h3>Already Registered?</h3>
+                            <p>Enter your ID or Phone to view your registration</p>
+                        </div>
+                    </div>
+                    <div class="login-input-group">
+                        <input type="text" id="loginIdentifier" placeholder="ID or Phone Number" maxlength="30" inputmode="text" autocomplete="off">
+                        <button type="button" class="login-btn" id="checkExistingBtn">
+                            <i class="fa-solid fa-magnifying-glass"></i> CHECK
+                        </button>
+                    </div>
+                    <div id="loginResult" class="login-result"></div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fa-solid fa-id-card"></i>
+                        Personal Information
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name <span class="required">*</span></label>
+                            <input type="text" name="fullName" id="regFullName" placeholder="Enter your full name" required autocomplete="name">
+                            <span class="field-hint">Letters and spaces only, min 2 characters</span>
+                        </div>
+                        <div class="form-group">
+                            <label>National ID / Passport <span class="required">*</span></label>
+                            <input type="text" name="idNumber" id="regIdNumber" placeholder="ID or passport number" required inputmode="text" autocomplete="off">
+                            <span class="field-hint">8-12 digits for ID, alphanumeric for passport</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Birth <span class="required">*</span></label>
+                            <input type="date" name="dateOfBirth" id="regDob" required autocomplete="bday">
+                            <span class="field-hint">Must be at least 10 years old</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Gender <span class="required">*</span></label>
+                            <select name="gender" id="regGender" required>
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Nationality <span class="required">*</span></label>
+                            <input type="text" name="nationality" id="regNationality" value="Kenyan" required autocomplete="country">
+                            <span class="field-hint">Letters and spaces only</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number <span class="required">*</span></label>
+                            <input type="tel" name="phone" id="regPhone" placeholder="07XXXXXXXX" required inputmode="numeric" autocomplete="tel">
+                            <span class="field-hint">Kenyan format: 07XXXXXXXX or 01XXXXXXXX</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address <span class="required">*</span></label>
+                            <input type="email" name="email" id="regEmail" placeholder="example@email.com" required inputmode="email" autocomplete="email">
+                            <span class="field-hint">Must be a valid email format</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Alternative Phone</label>
+                            <input type="tel" name="alternativePhone" id="regAltPhone" placeholder="Optional" inputmode="numeric" autocomplete="tel">
+                            <span class="field-hint">Kenyan format: 07XXXXXXXX or 01XXXXXXXX</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fa-solid fa-users"></i>
+                        Parent / Guardian Information
+                    </div>
+                    <div style="margin-bottom: 12px;">
+                        <button type="button" class="parent-toggle" id="parentToggle">
+                            <i class="fa-solid fa-plus-circle"></i> Add Parent/Guardian Details
+                        </button>
+                        <span style="font-size: var(--text-xs); color: var(--text-muted); margin-left: 10px;">(Optional)</span>
+                    </div>
+                    <div class="parent-section" id="parentSection">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Parent/Guardian Full Name</label>
+                                <input type="text" name="parentName" id="regParentName" placeholder="Enter parent/guardian name" autocomplete="family-name">
+                                <span class="field-hint">Letters and spaces only</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Relationship</label>
+                                <select name="parentRelationship" id="regParentRelation">
+                                    <option value="">Select Relationship</option>
+                                    <option value="Father">Father</option>
+                                    <option value="Mother">Mother</option>
+                                    <option value="Guardian">Guardian</option>
+                                    <option value="Step Father">Step Father</option>
+                                    <option value="Step Mother">Step Mother</option>
+                                    <option value="Grandparent">Grandparent</option>
+                                    <option value="Aunt">Aunt</option>
+                                    <option value="Uncle">Uncle</option>
+                                    <option value="Older Sibling">Older Sibling</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Parent/Guardian Phone</label>
+                                <input type="tel" name="parentPhone" id="regParentPhone" placeholder="07XXXXXXXX" inputmode="numeric" autocomplete="tel">
+                                <span class="field-hint">Kenyan format: 07XXXXXXXX or 01XXXXXXXX</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Parent/Guardian Email</label>
+                                <input type="email" name="parentEmail" id="regParentEmail" placeholder="parent@email.com" inputmode="email" autocomplete="email">
+                                <span class="field-hint">Must be a valid email format</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Parent/Guardian ID Number</label>
+                                <input type="text" name="parentId" id="regParentId" placeholder="ID or passport number" inputmode="text" autocomplete="off">
+                                <span class="field-hint">8-12 digits for ID, alphanumeric for passport</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Parent/Guardian Occupation</label>
+                                <input type="text" name="parentOccupation" id="regParentOcc" placeholder="Enter occupation" autocomplete="organization">
+                            </div>
+                            <div class="form-group full-width">
+                                <label>Parent/Guardian Address</label>
+                                <textarea name="parentAddress" id="regParentAddr" placeholder="Enter parent/guardian address" autocomplete="street-address"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fa-solid fa-location-dot"></i>
+                        Residential Location
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>County <span class="required">*</span></label>
+                            <select id="county" name="county" required disabled>
+                                <option value="">Loading Counties...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Constituency <span class="required">*</span></label>
+                            <select id="constituency" name="constituency" required disabled>
+                                <option value="">Select County First</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Ward <span class="required">*</span></label>
+                            <select id="ward" name="ward" required disabled>
+                                <option value="">Select Constituency First</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Location <span class="required">*</span></label>
+                            <input type="text" name="location" id="regLocation" placeholder="Enter your location" required autocomplete="off">
+                            <span class="field-hint">Letters, spaces, and hyphens only</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Sublocation <span class="required">*</span></label>
+                            <input type="text" name="sublocation" id="regSublocation" placeholder="Enter your sublocation" required autocomplete="off">
+                            <span class="field-hint">Letters, spaces, and hyphens only</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Village / Estate</label>
+                            <input type="text" name="village" id="regVillage" placeholder="Village, estate or neighbourhood" autocomplete="off">
+                            <span class="field-hint">Letters, spaces, and hyphens only</span>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Physical Address / Directions</label>
+                            <textarea name="physicalAddress" id="regPhysicalAddr" placeholder="Enter additional address details" autocomplete="street-address"></textarea>
+                        </div>
+                    </div>
+                    <div class="location-note" id="locationNote">
+                        <i class="fa-solid fa-circle-info"></i>
+                        Loading Kenya location data...
+                        <span class="loading-spinner"></span>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        Emergency Contact
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Emergency Contact Name <span class="required">*</span></label>
+                            <input type="text" name="emergencyName" id="regEmergName" placeholder="Full name" required autocomplete="name">
+                            <span class="field-hint">Letters and spaces only</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Relationship <span class="required">*</span></label>
+                            <select name="emergencyRelationship" id="regEmergRelation" required>
+                                <option value="">Select Relationship</option>
+                                <option>Parent</option>
+                                <option>Guardian</option>
+                                <option>Spouse</option>
+                                <option>Sibling</option>
+                                <option>Relative</option>
+                                <option>Friend</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Emergency Phone <span class="required">*</span></label>
+                            <input type="tel" name="emergencyPhone" id="regEmergPhone" placeholder="07XXXXXXXX" required inputmode="numeric" autocomplete="tel">
+                            <span class="field-hint">Kenyan format: 07XXXXXXXX or 01XXXXXXXX</span>
+                        </div>
+                        <div class="form-group">
+                            <label>Emergency Email</label>
+                            <input type="email" name="emergencyEmail" id="regEmergEmail" placeholder="Optional" inputmode="email" autocomplete="email">
+                            <span class="field-hint">Must be a valid email format</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="section-title">
+                        <i class="fa-solid fa-person-running"></i>
+                        Academy Information
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>I Want To Join As <span class="required">*</span></label>
+                            <select name="joinAs" id="regJoinAs" required>
+                                <option value="">Select Option</option>
+                                <option>Player</option>
+                                <option>Coach</option>
+                                <option>Volunteer</option>
+                                <option>Mentor</option>
+                                <option>Staff</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Soccer / Area of Interest <span class="required">*</span></label>
+                            <select name="sport" id="regSport" required>
+                                <option value="">Select Area</option>
+                                <option>Soccer</option>
+                                <option>Swimming</option>
+                                <option>Counseling &amp; Mentorship</option>
+                                <option>Soccer Exchange</option>
+                                <option>Team Building</option>
+                                <option>Hiking</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Experience Level</label>
+                            <select name="experience" id="regExperience">
+                                <option value="">Select Level</option>
+                                <option>Beginner</option>
+                                <option>Intermediate</option>
+                                <option>Advanced</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Previous Club / Academy</label>
+                            <input type="text" name="previousClub" id="regPrevClub" placeholder="Optional" autocomplete="off">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Why Do You Want To Join?</label>
+                            <textarea name="reason" id="regReason" placeholder="Briefly tell us why you want to join"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="agreement" id="agreementContainer">
+                    <input type="checkbox" id="agreement" required>
+                    <label for="agreement">
+                        I confirm that the information I have provided is correct and I agree to participate in Difathar Soccer Academy programs and activities.
+                    </label>
+                </div>
+
+                <div class="submit-area">
+                    <button type="submit" class="submit-button" id="submitButton">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        SUBMIT REGISTRATION
+                        <span class="button-status" id="buttonStatus"></span>
+                    </button>
+                </div>
+
+                <div class="validation-summary" id="validationSummary">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    Please fix the following issues:
+                    <ul id="validationErrorsList"></ul>
+                </div>
+
+                <div class="message success-message" id="successMessage">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Registration submitted successfully!
+                </div>
+
+                <div class="message error-message" id="errorMessage">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    Please complete all required fields.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+    <div class="toast-message" id="toastMessage"></div>
+
+    <script src="dsa-bridge.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            'use strict';
+
+            const SUPABASE_URL = 'https://fyvzwhatiwspfcybpafn.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5dnp3aGF0aXdzcGZjeWJwYWZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzMzEyMzIsImV4cCI6MjEwMzkwNzIzMn0.yB9j5A2MpdoLUPDvVec3ZtzcgdvQGDGgGM2yzdz2MWA';
+            
+            const ADMIN_PASSCODE = '9586';
+            
+            const STATUS = {
+                PAID: 'PAID',
+                PENDING: 'PENDING VERIFICATION',
+                UNPAID: 'NOT YET PAID'
+            };
+
+            let supabaseClient = null;
+            let supabaseConnected = false;
+            let parentVisible = false;
+
+            function generateStudentId(existingIds) {
+                const year = new Date().getFullYear();
+                let maxNum = 0;
+                
+                if (existingIds && existingIds.length > 0) {
+                    const yearIds = existingIds.filter(id => {
+                        if (typeof id === 'string' && id.startsWith('DSA-' + year)) {
+                            const parts = id.split('-');
+                            if (parts.length === 3) {
+                                const num = parseInt(parts[2]);
+                                return !isNaN(num);
+                            }
+                        }
+                        return false;
+                    });
+                    
+                    yearIds.forEach(id => {
+                        const num = parseInt(id.split('-')[2]);
+                        if (!isNaN(num) && num > maxNum) {
+                            maxNum = num;
+                        }
+                    });
+                }
+                
+                const nextNum = maxNum + 1;
+                const paddedNum = String(nextNum).padStart(4, '0');
+                return 'DSA-' + year + '-' + paddedNum;
+            }
+
+            function generateUUID() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0;
+                    var v = c === 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+
+            async function initSupabase() {
+                try {
+                    if (typeof supabase !== 'undefined') {
+                        const { createClient } = supabase;
+                        supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                        
+                        const { data, error } = await supabaseClient
+                            .from('members')
+                            .select('count', { count: 'exact', head: true });
+                        
+                        supabaseConnected = !error;
+                        
+                        if (supabaseConnected) {
+                            console.log('✅ Supabase connected successfully');
+                            await loadAdminSettingsFromSupabase();
+                        } else {
+                            console.warn('⚠️ Supabase connection failed, using localStorage only');
+                            loadAdminSettingsFromLocalStorage();
+                        }
+                        return supabaseConnected;
+                    }
+                    return false;
+                } catch(e) {
+                    console.warn('⚠️ Supabase init failed:', e.message);
+                    supabaseConnected = false;
+                    loadAdminSettingsFromLocalStorage();
+                    return false;
+                }
+            }
+
+            async function loadAdminSettingsFromSupabase() {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('admin_settings')
+                        .select('value')
+                        .eq('key', 'site_settings')
+                        .maybeSingle();
+                    
+                    if (!error && data) {
+                        const settings = data.value;
+                        applyAdminSettings(settings);
+                        localStorage.setItem('difathar_admin_settings', JSON.stringify(settings));
+                        console.log('✅ Admin settings loaded from Supabase');
+                        return settings;
+                    }
+                } catch(e) {
+                    console.warn('⚠️ Failed to load settings from Supabase:', e.message);
+                }
+                return loadAdminSettingsFromLocalStorage();
+            }
+
+            function loadAdminSettingsFromLocalStorage() {
+                try {
+                    const stored = localStorage.getItem('difathar_admin_settings');
+                    if (stored) {
+                        const settings = JSON.parse(stored);
+                        applyAdminSettings(settings);
+                        return settings;
+                    }
+                } catch(e) {
+                    console.warn('Failed to load admin settings from localStorage:', e);
+                }
+                return applyDefaultSettings();
+            }
+
+            function applyDefaultSettings() {
+                const defaults = {
+                    academyName: 'Difathar Soccer Academy',
+                    sportOptions: 'Soccer, Swimming, Counseling & Mentorship, Soccer Exchange, Team Building, Hiking, Other',
+                    joinOptions: 'Player, Coach, Volunteer, Mentor, Staff, Other',
+                    experienceOptions: 'Beginner, Intermediate, Advanced',
+                    emergencyOptions: 'Parent, Guardian, Spouse, Sibling, Relative, Friend, Other',
+                    parentRelationOptions: 'Father, Mother, Guardian, Step Father, Step Mother, Grandparent, Aunt, Uncle, Older Sibling, Other',
+                    defaultNationality: 'Kenyan',
+                    invoiceAmount: '1000',
+                    invoiceProgramme: 'Registration'
+                };
+                applyAdminSettings(defaults);
+                return defaults;
+            }
+
+            async function saveAdminSettingsToSupabase(settings) {
+                try {
+                    const { data: existing } = await supabaseClient
+                        .from('admin_settings')
+                        .select('id')
+                        .eq('key', 'site_settings')
+                        .maybeSingle();
+
+                    let result;
+                    if (existing) {
+                        const { data, error } = await supabaseClient
+                            .from('admin_settings')
+                            .update({ 
+                                value: settings,
+                                updated_at: new Date().toISOString()
+                            })
+                            .eq('key', 'site_settings')
+                            .select()
+                            .single();
+                        
+                        if (error) throw error;
+                        result = data;
+                    } else {
+                        const { data, error } = await supabaseClient
+                            .from('admin_settings')
+                            .insert({
+                                key: 'site_settings',
+                                value: settings,
+                                updated_at: new Date().toISOString()
+                            })
+                            .select()
+                            .single();
+                        
+                        if (error) throw error;
+                        result = data;
+                    }
+                    
+                    localStorage.setItem('difathar_admin_settings', JSON.stringify(settings));
+                    console.log('✅ Admin settings saved to Supabase');
+                    return true;
+                } catch(e) {
+                    console.error('❌ Failed to save settings to Supabase:', e.message);
+                    localStorage.setItem('difathar_admin_settings', JSON.stringify(settings));
+                    return false;
+                }
+            }
+
+            function applyAdminSettings(settings) {
+                const elements = {
+                    academyTitleDisplay: document.getElementById('academyTitleDisplay'),
+                    adminAcademyName: document.getElementById('adminAcademyName'),
+                    adminSportOptions: document.getElementById('adminSportOptions'),
+                    adminJoinOptions: document.getElementById('adminJoinOptions'),
+                    adminExperienceOptions: document.getElementById('adminExperienceOptions'),
+                    adminEmergencyOptions: document.getElementById('adminEmergencyOptions'),
+                    adminParentRelationOptions: document.getElementById('adminParentRelationOptions'),
+                    adminDefaultNationality: document.getElementById('adminDefaultNationality'),
+                    adminInvoiceAmount: document.getElementById('adminInvoiceAmount'),
+                    adminInvoiceProgramme: document.getElementById('adminInvoiceProgramme')
+                };
+
+                if (elements.academyTitleDisplay) {
+                    elements.academyTitleDisplay.textContent = settings.academyName || 'Difathar Soccer Academy';
+                }
+                if (elements.adminAcademyName) {
+                    elements.adminAcademyName.value = settings.academyName || 'Difathar Soccer Academy';
+                }
+                if (elements.adminSportOptions) {
+                    elements.adminSportOptions.value = settings.sportOptions || 'Soccer, Swimming, Counseling & Mentorship, Soccer Exchange, Team Building, Hiking, Other';
+                }
+                if (elements.adminJoinOptions) {
+                    elements.adminJoinOptions.value = settings.joinOptions || 'Player, Coach, Volunteer, Mentor, Staff, Other';
+                }
+                if (elements.adminExperienceOptions) {
+                    elements.adminExperienceOptions.value = settings.experienceOptions || 'Beginner, Intermediate, Advanced';
+                }
+                if (elements.adminEmergencyOptions) {
+                    elements.adminEmergencyOptions.value = settings.emergencyOptions || 'Parent, Guardian, Spouse, Sibling, Relative, Friend, Other';
+                }
+                if (elements.adminParentRelationOptions) {
+                    elements.adminParentRelationOptions.value = settings.parentRelationOptions || 'Father, Mother, Guardian, Step Father, Step Mother, Grandparent, Aunt, Uncle, Older Sibling, Other';
+                }
+                if (elements.adminDefaultNationality) {
+                    elements.adminDefaultNationality.value = settings.defaultNationality || 'Kenyan';
+                }
+                if (elements.adminInvoiceAmount) {
+                    elements.adminInvoiceAmount.value = settings.invoiceAmount || '1000';
+                }
+                if (elements.adminInvoiceProgramme) {
+                    elements.adminInvoiceProgramme.value = settings.invoiceProgramme || 'Registration';
+                }
+
+                updateSelectOptions('regSport', settings.sportOptions);
+                updateSelectOptions('regJoinAs', settings.joinOptions);
+                updateSelectOptions('regExperience', settings.experienceOptions);
+                updateSelectOptions('regEmergRelation', settings.emergencyOptions);
+                updateSelectOptions('regParentRelation', settings.parentRelationOptions);
+                
+                const natField = document.getElementById('regNationality');
+                if (natField) natField.value = settings.defaultNationality || 'Kenyan';
+            }
+
+            function updateSelectOptions(selectId, optionsString) {
+                const select = document.getElementById(selectId);
+                if (!select) return;
+                
+                const options = optionsString.split(',').map(s => s.trim()).filter(s => s);
+                if (options.length === 0) return;
+                
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">Select Option</option>';
+                options.forEach(opt => {
+                    const option = document.createElement('option');
+                    option.value = opt;
+                    option.textContent = opt;
+                    select.appendChild(option);
+                });
+                if (currentValue && options.includes(currentValue)) {
+                    select.value = currentValue;
+                }
+            }
+
+            async function getExistingStudentIds() {
+                try {
+                    if (supabaseClient && supabaseConnected) {
+                        const { data, error } = await supabaseClient
+                            .from('members')
+                            .select('student_id');
+                        
+                        if (!error && data) {
+                            return data.map(m => m.student_id).filter(id => id);
+                        }
+                    }
+                    
+                    const stored = localStorage.getItem('difathar_registration_records');
+                    if (stored) {
+                        const records = JSON.parse(stored);
+                        return records.map(r => r.student_id).filter(id => id);
+                    }
+                    return [];
+                } catch(e) {
+                    console.warn('Failed to get existing student IDs:', e);
+                    return [];
+                }
+            }
+
+            async function saveMemberToSupabase(memberData) {
+                try {
+                    const { data: existing } = await supabaseClient
+                        .from('members')
+                        .select('id')
+                        .eq('id_number', memberData.id_number)
+                        .maybeSingle();
+
+                    let result;
+                    if (existing) {
+                        const { data, error } = await supabaseClient
+                            .from('members')
+                            .update(memberData)
+                            .eq('id_number', memberData.id_number)
+                            .select()
+                            .single();
+                        
+                        if (error) throw error;
+                        result = data;
+                        console.log('✅ Member updated in Supabase:', data);
+                    } else {
+                        const { data, error } = await supabaseClient
+                            .from('members')
+                            .insert(memberData)
+                            .select()
+                            .single();
+                        
+                        if (error) throw error;
+                        result = data;
+                        console.log('✅ Member saved to Supabase:', data);
+                    }
+                    
+                    saveMemberToLocalStorage(memberData);
+                    return result;
+                } catch(e) {
+                    console.warn('⚠️ Save to Supabase failed:', e.message);
+                    saveMemberToLocalStorage(memberData);
+                    return memberData;
+                }
+            }
+
+            function saveMemberToLocalStorage(memberData) {
+                try {
+                    const REGISTRATION_RECORDS_KEY = 'difathar_registration_records';
+                    let records = [];
+                    const stored = localStorage.getItem(REGISTRATION_RECORDS_KEY);
+                    if (stored) {
+                        try { records = JSON.parse(stored); } catch(e) {}
+                    }
+                    const existingIndex = records.findIndex(r => r.id_number === memberData.id_number);
+                    if (existingIndex !== -1) {
+                        records[existingIndex] = { ...records[existingIndex], ...memberData };
+                    } else {
+                        records.push(memberData);
+                    }
+                    localStorage.setItem(REGISTRATION_RECORDS_KEY, JSON.stringify(records));
+                    localStorage.setItem('difathar_registration_pending', JSON.stringify(memberData));
+                } catch(e) {
+                    console.warn('⚠️ Failed to save to localStorage:', e.message);
+                }
+            }
+
+            function getCurrentPaymentPeriod() {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                return year + '-' + month;
+            }
+
+            function formatDate() {
+                return new Intl.DateTimeFormat('en-GB', { 
+                    day: '2-digit', 
+                    month: '2-digit', 
+                    year: 'numeric' 
+                }).format(new Date());
+            }
+
+            async function generateInvoiceNumber() {
+                try {
+                    if (supabaseClient && supabaseConnected) {
+                        const { data, error } = await supabaseClient
+                            .from('admin_settings')
+                            .select('value')
+                            .eq('key', 'invoice_sequence')
+                            .maybeSingle();
+                        
+                        let seq = 0;
+                        if (!error && data && data.value) {
+                            seq = data.value.sequence || 0;
+                        }
+                        
+                        seq += 1;
+                        
+                        await supabaseClient
+                            .from('admin_settings')
+                            .upsert({
+                                key: 'invoice_sequence',
+                                value: { sequence: seq, updated_at: new Date().toISOString() },
+                                updated_at: new Date().toISOString()
+                            }, { onConflict: 'key' });
+                        
+                        const year = new Date().getFullYear();
+                        const padded = String(seq).padStart(5, '0');
+                        return 'INV/' + year + '/' + padded;
+                    }
+                } catch(e) {
+                    console.warn('⚠️ Failed to generate invoice number from Supabase:', e);
+                }
+                return 'INV/' + new Date().getFullYear() + '/' + String(Date.now()).slice(-5);
+            }
+
+            async function createInvoiceForMember(memberData) {
+                try {
+                    const currentPeriod = getCurrentPaymentPeriod();
+                    const invoiceNo = await generateInvoiceNumber();
+                    
+                    const invoiceData = {
+                        invoice_no: invoiceNo,
+                        student_id: memberData.student_id,
+                        student_name: memberData.full_name,
+                        email: memberData.email,
+                        phone: memberData.phone,
+                        programme: document.getElementById('adminInvoiceProgramme').value || 'Registration',
+                        amount: parseFloat(document.getElementById('adminInvoiceAmount').value) || 1000,
+                        status: STATUS.UNPAID,
+                        accepted: false,
+                        created_at: new Date().toISOString(),
+                        date: formatDate(),
+                        payment_period: currentPeriod,
+                        transaction_reference: '',
+                        paid_date: null,
+                        verified_at: null,
+                        accepted_at: null
+                    };
+
+                    if (supabaseClient && supabaseConnected) {
+                        const { data, error } = await supabaseClient
+                            .from('invoices')
+                            .insert(invoiceData)
+                            .select()
+                            .single();
+                        
+                        if (error) throw error;
+                        console.log('✅ Invoice saved to Supabase:', data);
+                        saveInvoiceToLocalStorage(invoiceData);
+                        return data;
+                    } else {
+                        saveInvoiceToLocalStorage(invoiceData);
+                        return invoiceData;
+                    }
+                } catch(e) {
+                    console.warn('⚠️ Save invoice failed:', e.message);
+                    const invoiceData = {
+                        invoice_no: 'INV/' + new Date().getFullYear() + '/' + String(Date.now()).slice(-5),
+                        student_id: memberData.student_id,
+                        student_name: memberData.full_name,
+                        email: memberData.email,
+                        phone: memberData.phone,
+                        programme: document.getElementById('adminInvoiceProgramme').value || 'Registration',
+                        amount: parseFloat(document.getElementById('adminInvoiceAmount').value) || 1000,
+                        status: STATUS.UNPAID,
+                        accepted: false,
+                        created_at: new Date().toISOString(),
+                        date: formatDate(),
+                        payment_period: getCurrentPaymentPeriod(),
+                        transaction_reference: '',
+                        paid_date: null,
+                        verified_at: null,
+                        accepted_at: null
+                    };
+                    saveInvoiceToLocalStorage(invoiceData);
+                    return invoiceData;
+                }
+            }
+
+            function saveInvoiceToLocalStorage(invoiceData) {
+                try {
+                    const invoiceStored = localStorage.getItem('difathar_invoice_records_v1');
+                    let invoices = [];
+                    try { invoices = invoiceStored ? JSON.parse(invoiceStored) : []; } catch(e) {}
+                    const existingIndex = invoices.findIndex(inv => inv.student_id === invoiceData.student_id);
+                    if (existingIndex !== -1) {
+                        invoices[existingIndex] = invoiceData;
+                    } else {
+                        invoices.push(invoiceData);
+                    }
+                    localStorage.setItem('difathar_invoice_records_v1', JSON.stringify(invoices));
+                } catch(e) {
+                    console.warn('Failed to save invoice to localStorage:', e);
+                }
+            }
+
+            async function checkExistingRegistration(identifier) {
+                if (!supabaseClient || !supabaseConnected) {
+                    return checkExistingRegistrationLocal(identifier);
+                }
+
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('members')
+                        .select('*')
+                        .or(`id_number.eq.${identifier},phone.eq.${identifier},student_id.eq.${identifier}`)
+                        .maybeSingle();
+                    
+                    if (error) throw error;
+                    return data || null;
+                } catch(e) {
+                    console.warn('⚠️ Supabase check failed:', e.message);
+                    return checkExistingRegistrationLocal(identifier);
+                }
+            }
+
+            function checkExistingRegistrationLocal(identifier) {
+                try {
+                    const stored = localStorage.getItem('difathar_registration_records');
+                    if (!stored) return null;
+                    const records = JSON.parse(stored);
+                    return records.find(r => 
+                        r.id_number === identifier || 
+                        r.phone === identifier || 
+                        r.student_id === identifier
+                    ) || null;
+                } catch(e) {
+                    return null;
+                }
+            }
+
+            function validateField(field) {
+                const value = field.value.trim();
+                const isRequired = field.hasAttribute('required');
+                const fieldType = field.type || field.tagName.toLowerCase();
+                const fieldName = field.name || field.id || '';
+
+                if (field.closest('.parent-section') && !parentVisible) {
+                    return { valid: true, message: '' };
+                }
+
+                if (field.tagName === 'SELECT') {
+                    if (isRequired && !value) return { valid: false, message: 'Please select an option' };
+                    if (field.id === 'county' || field.id === 'constituency' || field.id === 'ward') {
+                        if (isRequired && field.disabled) return { valid: false, message: 'Please load location data first' };
+                    }
+                    return { valid: true, message: '' };
+                }
+
+                if (fieldType === 'email') {
+                    if (!value && !isRequired) return { valid: true, message: '' };
+                    if (!value && isRequired) return { valid: false, message: 'Email is required' };
+                    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                    if (!emailRegex.test(value)) {
+                        return { valid: false, message: 'Enter a valid email address' };
+                    }
+                    return { valid: true, message: '' };
+                }
+
+                if (fieldType === 'tel' || fieldName.toLowerCase().includes('phone')) {
+                    if (!value && !isRequired) return { valid: true, message: '' };
+                    if (!value && isRequired) return { valid: false, message: 'Phone number is required' };
+                    const digits = value.replace(/\D/g, '');
+                    const kenyanRegex = /^(07|01)\d{8}$/;
+                    if (!kenyanRegex.test(digits)) {
+                        return { valid: false, message: 'Enter a valid Kenyan phone number (07XXXXXXXX or 01XXXXXXXX)' };
+                    }
+                    return { valid: true, message: '' };
+                }
+
+                if (fieldType === 'date') {
+                    if (!value && isRequired) return { valid: false, message: 'Date of birth is required' };
+                    if (value) {
+                        const date = new Date(value);
+                        const today = new Date();
+                        let age = today.getFullYear() - date.getFullYear();
+                        const monthDiff = today.getMonth() - date.getMonth();
+                        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
+                            age--;
+                        }
+                        if (age < 10) {
+                            return { valid: false, message: 'You must be at least 10 years old' };
+                        }
+                        if (age > 100) {
+                            return { valid: false, message: 'Please enter a valid date of birth' };
+                        }
+                    }
+                    return { valid: true, message: '' };
+                }
+
+                if (fieldType === 'text' || fieldType === 'textarea') {
+                    if (!value && !isRequired) return { valid: true, message: '' };
+                    if (!value && isRequired) return { valid: false, message: 'This field is required' };
+                    if (value.length < 2 && isRequired) {
+                        return { valid: false, message: 'Must be at least 2 characters' };
+                    }
+                    if (fieldName === 'fullName' || fieldName === 'parentName' || fieldName === 'emergencyName' ||
+                        fieldName === 'nationality' || fieldName === 'location' || fieldName === 'sublocation' ||
+                        fieldName === 'village') {
+                        const nameRegex = /^[a-zA-Z\s\-']+$/;
+                        if (!nameRegex.test(value)) {
+                            return { valid: false, message: 'Only letters, spaces, hyphens, and apostrophes allowed' };
+                        }
+                    }
+                    if (fieldName === 'idNumber' || fieldName === 'parentId') {
+                        const idRegex = /^[a-zA-Z0-9]{8,12}$/;
+                        if (!idRegex.test(value)) {
+                            return { valid: false, message: 'Must be 8-12 alphanumeric characters' };
+                        }
+                    }
+                    return { valid: true, message: '' };
+                }
+
+                return { valid: true, message: '' };
+            }
+
+            function updateFieldStatus(field) {
+                var group = field.closest('.form-group');
+                if (!group) return;
+                var result = validateField(field);
+                var hint = group.querySelector('.field-hint');
+                field.classList.remove('valid', 'invalid');
+
+                if (!field.value && !field.hasAttribute('required')) {
+                    if (hint) hint.classList.remove('show');
+                    return;
+                }
+
+                if (field.closest('.parent-section') && !parentVisible) {
+                    if (hint) hint.classList.remove('show');
+                    return;
+                }
+
+                if (result.valid) {
+                    field.classList.add('valid');
+                    if (hint) hint.classList.remove('show');
+                } else {
+                    field.classList.add('invalid');
+                    if (hint) hint.classList.add('show');
+                }
+            }
+
+            function showToast(message, duration) {
+                const toast = document.getElementById('toastMessage');
+                if (!toast) return;
+                toast.textContent = message;
+                toast.className = 'toast-message show';
+                clearTimeout(toast._timer);
+                toast._timer = setTimeout(function() {
+                    toast.className = 'toast-message';
+                }, duration || 3000);
+            }
+
+            function showCelebration(data) {
+                const celebration = document.getElementById('celebration');
+                if (!celebration) return;
+                const name = data.full_name || 'Student';
+                const studentID = data.student_id || 'DSA-' + new Date().getFullYear() + '-0001';
+                celebration.innerHTML = `
+                    <div class="celebration-card">
+                        <div class="icon-row">
+                            <i class="fa-solid fa-futbol"></i>
+                            <i class="fa-solid fa-trophy"></i>
+                            <i class="fa-solid fa-futbol"></i>
+                        </div>
+                        <h1>🎉 CONGRATULATIONS! 🎉</h1>
+                        <div class="sub-text">${name}, you're now registered!</div>
+                        <div class="detail-row">
+                            <div class="detail-item">
+                                <span class="label">Student ID</span>
+                                <span class="value">${studentID}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Programme</span>
+                                <span class="value">${document.getElementById('adminInvoiceProgramme').value || 'Registration'}</span>
+                            </div>
+                        </div>
+                        <button class="btn-close-celebration" onclick="window.closeCelebration()">
+                            <i class="fa-solid fa-arrow-right"></i> Continue to Invoice
+                        </button>
+                    </div>
+                `;
+                celebration.classList.add('active');
+            }
+
+            window.closeCelebration = function() {
+                const celebration = document.getElementById('celebration');
+                if (celebration) {
+                    celebration.classList.remove('active');
+                    celebration.innerHTML = '';
+                }
+            };
+
+            const KENYA_DATA_URL = 'https://raw.githubusercontent.com/stevehoober254/kenya-county-data/main/county_data.json';
+
+            function loadKenyaLocations() {
+                try {
+                    const countySelect = document.getElementById('county');
+                    const locationNote = document.getElementById('locationNote');
+                    
+                    if (countySelect) {
+                        countySelect.innerHTML = '<option value="">Loading 47 Counties...</option>';
+                        countySelect.disabled = true;
+                        
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('GET', KENYA_DATA_URL, true);
+                        xhr.timeout = 10000;
+                        xhr.onload = function() {
+                            if (xhr.status >= 200 && xhr.status < 300) {
+                                try {
+                                    const data = JSON.parse(xhr.responseText);
+                                    if (!Array.isArray(data) || data.length === 0) throw new Error('Invalid data');
+                                    window.kenyaLocationData = data;
+                                    countySelect.innerHTML = '<option value="">Select County</option>';
+                                    data.forEach(function(county) {
+                                        if (county.name) {
+                                            const option = document.createElement('option');
+                                            option.value = county.name;
+                                            option.textContent = county.name;
+                                            countySelect.appendChild(option);
+                                        }
+                                    });
+                                    countySelect.disabled = false;
+                                    resetConstituency();
+                                    resetWard();
+                                    if (locationNote) {
+                                        locationNote.className = 'location-note success';
+                                        locationNote.innerHTML = '<i class="fa-solid fa-circle-check"></i> Kenya location data loaded successfully.';
+                                    }
+                                } catch (e) {
+                                    handleLocationError();
+                                }
+                            } else {
+                                handleLocationError();
+                            }
+                        };
+                        xhr.onerror = handleLocationError;
+                        xhr.ontimeout = handleLocationError;
+                        xhr.send();
+                    }
+                } catch (e) {
+                    handleLocationError();
+                }
+            }
+
+            function handleLocationError() {
+                const countySelect = document.getElementById('county');
+                const locationNote = document.getElementById('locationNote');
+                if (countySelect) {
+                    countySelect.innerHTML = '<option value="">Unable to load counties</option>';
+                    countySelect.disabled = true;
+                }
+                if (locationNote) {
+                    locationNote.className = 'location-note error';
+                    locationNote.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Could not load Kenya location data. <button class="retry-btn" onclick="loadKenyaLocations()"><i class="fa-solid fa-rotate"></i> Retry</button>';
+                }
+            }
+
+            function resetConstituency() {
+                const constituencySelect = document.getElementById('constituency');
+                if (constituencySelect) {
+                    constituencySelect.innerHTML = '<option value="">Select County First</option>';
+                    constituencySelect.disabled = true;
+                    constituencySelect.value = '';
+                }
+            }
+
+            function resetWard() {
+                const wardSelect = document.getElementById('ward');
+                if (wardSelect) {
+                    wardSelect.innerHTML = '<option value="">Select Constituency First</option>';
+                    wardSelect.disabled = true;
+                    wardSelect.value = '';
+                }
+            }
+
+            const form = document.getElementById('registrationForm');
+            const submitButton = document.getElementById('submitButton');
+            const buttonStatus = document.getElementById('buttonStatus');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const validationSummary = document.getElementById('validationSummary');
+            const validationErrorsList = document.getElementById('validationErrorsList');
+            const agreementContainer = document.getElementById('agreementContainer');
+
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault();
+
+                successMessage.style.display = 'none';
+                errorMessage.style.display = 'none';
+                validationSummary.classList.remove('show');
+
+                let hasErrors = false;
+                const errorMessages = [];
+                const allFields = form.querySelectorAll('input, select, textarea');
+                
+                allFields.forEach(function(field) {
+                    if (field.closest('.parent-section') && !parentVisible) return;
+                    if (field.hasAttribute('required') && !field.disabled) {
+                        const result = validateField(field);
+                        if (!result.valid) {
+                            hasErrors = true;
+                            const label = field.closest('.form-group') ? field.closest('.form-group').querySelector('label') : null;
+                            const fieldName = label ? label.textContent.replace('*', '').trim() : (field.name || 'Field');
+                            errorMessages.push(fieldName + ': ' + result.message);
+                        }
+                    }
+                });
+
+                const agreement = document.getElementById('agreement');
+                if (!agreement.checked) {
+                    agreementContainer.classList.add('error');
+                    hasErrors = true;
+                    errorMessages.push('Agreement: You must agree to the terms');
+                } else {
+                    agreementContainer.classList.remove('error');
+                }
+
+                if (hasErrors) {
+                    validationSummary.classList.add('show');
+                    validationErrorsList.innerHTML = errorMessages.map(function(e) {
+                        return '<li><i class="fa-solid fa-circle-xmark"></i> ' + e + '</li>';
+                    }).join('');
+                    errorMessage.style.display = 'block';
+                    submitButton.disabled = false;
+                    buttonStatus.textContent = '';
+                    return;
+                }
+
+                submitButton.disabled = true;
+                buttonStatus.textContent = 'Saving...';
+
+                const formData = new FormData(form);
+                const existingIds = await getExistingStudentIds();
+                const studentId = generateStudentId(existingIds);
+                
+                const registrationData = {
+                    student_id: studentId,
+                    full_name: formData.get('fullName'),
+                    id_number: formData.get('idNumber'),
+                    date_of_birth: formData.get('dateOfBirth'),
+                    gender: formData.get('gender'),
+                    nationality: formData.get('nationality'),
+                    phone: formData.get('phone'),
+                    email: formData.get('email'),
+                    alternative_phone: formData.get('alternativePhone'),
+                    parent_name: formData.get('parentName'),
+                    parent_relationship: formData.get('parentRelationship'),
+                    parent_phone: formData.get('parentPhone'),
+                    parent_email: formData.get('parentEmail'),
+                    parent_id: formData.get('parentId'),
+                    parent_occupation: formData.get('parentOccupation'),
+                    parent_address: formData.get('parentAddress'),
+                    county: formData.get('county'),
+                    constituency: formData.get('constituency'),
+                    ward: formData.get('ward'),
+                    location: formData.get('location'),
+                    sublocation: formData.get('sublocation'),
+                    village: formData.get('village'),
+                    physical_address: formData.get('physicalAddress'),
+                    emergency_name: formData.get('emergencyName'),
+                    emergency_relationship: formData.get('emergencyRelationship'),
+                    emergency_phone: formData.get('emergencyPhone'),
+                    emergency_email: formData.get('emergencyEmail'),
+                    join_as: formData.get('joinAs'),
+                    sport: formData.get('sport'),
+                    experience: formData.get('experience'),
+                    previous_club: formData.get('previousClub'),
+                    reason: formData.get('reason'),
+                    registered_at: new Date().toISOString()
+                };
+
+                try {
+                    const savedMember = await saveMemberToSupabase(registrationData);
+                    console.log('✅ Member saved to Supabase:', savedMember);
+
+                    const invoiceData = await createInvoiceForMember(registrationData);
+                    console.log('✅ Invoice saved to Supabase:', invoiceData);
+
+                    successMessage.style.display = 'block';
+                    successMessage.innerHTML = '<i class="fa-solid fa-circle-check"></i> Registration submitted successfully!';
+                    
+                    showCelebration(registrationData);
+
+                    if (window.dsaBridge) {
+                        window.dsaBridge.emitRegistration({
+                            student_id: studentId,
+                            full_name: registrationData.full_name,
+                            phone: registrationData.phone,
+                            email: registrationData.email,
+                            timestamp: new Date().toISOString()
+                        });
+                        console.log('📤 Registration event emitted via bridge');
+                    }
+
+                    setTimeout(function() {
+                        const params = new URLSearchParams();
+                        params.set('sid', studentId);
+                        params.set('source', 'registration');
+                        window.location.href = 'invoice.html?' + params.toString();
+                    }, 2500);
+
+                } catch(error) {
+                    console.error('❌ Registration failed:', error);
+                    errorMessage.style.display = 'block';
+                    errorMessage.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Failed to save: ' + error.message;
+                    submitButton.disabled = false;
+                    buttonStatus.textContent = '';
+                }
+            });
+
+            const modal = document.getElementById('registrationModal');
+            const openModalBtn = document.getElementById('openModalBtn');
+            const closeButton = document.getElementById('closeButton');
+            const buttonContainer = document.getElementById('buttonContainer');
+
+            function openModal() {
+                modal.classList.add('active');
+                buttonContainer.classList.add('hidden');
+                document.body.style.overflow = 'hidden';
+                loadKenyaLocations();
+            }
+
+            function closeModal() {
+                modal.classList.remove('active');
+                buttonContainer.classList.remove('hidden');
+                document.body.style.overflow = '';
+                if (document.getElementById('celebration').classList.contains('active')) {
+                    document.getElementById('celebration').classList.remove('active');
+                    document.getElementById('celebration').innerHTML = '';
+                }
+            }
+
+            openModalBtn.addEventListener('click', openModal);
+            closeButton.addEventListener('click', closeModal);
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && modal.classList.contains('active')) {
+                    closeModal();
+                }
+            });
+
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) closeModal();
+            });
+
+            document.getElementById('backButton').addEventListener('click', function() {
+                if (window.history.length > 1) window.history.back();
+                else window.location.href = 'dashboard.html';
+            });
+
+            const parentToggle = document.getElementById('parentToggle');
+            const parentSection = document.getElementById('parentSection');
+            parentToggle.addEventListener('click', function() {
+                parentVisible = !parentVisible;
+                if (parentVisible) {
+                    parentSection.classList.add('active');
+                    parentToggle.innerHTML = '<i class="fa-solid fa-minus-circle"></i> Remove Parent/Guardian Details';
+                    parentToggle.classList.add('active');
+                } else {
+                    parentSection.classList.remove('active');
+                    parentToggle.innerHTML = '<i class="fa-solid fa-plus-circle"></i> Add Parent/Guardian Details';
+                    parentToggle.classList.remove('active');
+                }
+            });
+
+            document.querySelectorAll('.form-group input, .form-group select, .form-group textarea').forEach(function(field) {
+                ['input', 'change', 'blur'].forEach(function(eventType) {
+                    field.addEventListener(eventType, function() {
+                        if (this.closest('.parent-section') && !parentVisible) return;
+                        updateFieldStatus(this);
+                    });
+                });
+            });
+
+            document.getElementById('agreement').addEventListener('change', function() {
+                if (this.checked) agreementContainer.classList.remove('error');
+            });
+
+            const loginIdentifier = document.getElementById('loginIdentifier');
+            const checkExistingBtn = document.getElementById('checkExistingBtn');
+            const loginResult = document.getElementById('loginResult');
+
+            async function checkExistingRegistrationUI() {
+                var identifier = loginIdentifier.value.trim();
+                if (!identifier) {
+                    loginResult.className = 'login-result error';
+                    loginResult.innerHTML = '⚠️ Please enter your ID or Phone number.';
+                    loginResult.style.display = 'block';
+                    return;
+                }
+
+                var found = await checkExistingRegistration(identifier);
+
+                if (found) {
+                    loginResult.className = 'login-result success';
+                    loginResult.innerHTML = '<i class="fa-solid fa-circle-check"></i> ✅ Registration found for <strong>' + (found.full_name || '') + '</strong>!<br><span style="font-size:var(--text-xs);opacity:0.7;">ID: ' + (found.id_number || 'N/A') + ' • Phone: ' + (found.phone || 'N/A') + '</span><br><span style="font-size:var(--text-sm);margin-top:4px;display:inline-block;"><a href="#" class="action-link" onclick="window.goToInvoice(\'' + (found.student_id || found.id_number || '') + '\')"><i class="fa-solid fa-file-invoice"></i> View Invoice</a> &nbsp;|&nbsp; <a href="#" class="action-link" onclick="window.fillFormFromExisting(\'' + identifier + '\')"><i class="fa-solid fa-pen"></i> Edit Registration</a></span>';
+                    loginResult.style.display = 'block';
+                } else {
+                    loginResult.className = 'login-result info';
+                    loginResult.innerHTML = '<i class="fa-solid fa-info-circle"></i> No existing registration found with that ID or Phone.<br><span style="font-size:var(--text-xs);opacity:0.7;">Please complete the registration form below.</span>';
+                    loginResult.style.display = 'block';
+                }
+            }
+
+            window.goToInvoice = function(identifier) {
+                var invoiceStored = localStorage.getItem('difathar_invoice_records_v1');
+                var invoices = [];
+                try { invoices = invoiceStored ? JSON.parse(invoiceStored) : []; } catch(e) {}
+
+                var found = invoices.find(function(inv) {
+                    return inv.student_id === identifier || inv.phone === identifier || inv.id_number === identifier;
+                });
+
+                if (found) {
+                    var params = new URLSearchParams();
+                    params.set('sid', found.student_id);
+                    params.set('name', found.student_name || found.name);
+                    params.set('email', found.email || '');
+                    params.set('phone', found.phone || '');
+                    params.set('programme', found.programme || 'Registration');
+                    params.set('amount', found.amount || '1000');
+                    params.set('source', 'registration_login');
+
+                    window.location.href = 'invoice.html?' + params.toString();
+                } else {
+                    showToast('No invoice found for this registration.');
+                }
+            };
+
+            window.fillFormFromExisting = function(identifier) {
+                var stored = localStorage.getItem('difathar_registration_records');
+                var records = [];
+                try { records = stored ? JSON.parse(stored) : []; } catch(e) {}
+
+                var found = records.find(function(r) {
+                    return r.id_number === identifier || r.phone === identifier || r.student_id === identifier;
+                });
+
+                if (found) {
+                    document.getElementById('regFullName').value = found.full_name || '';
+                    document.getElementById('regIdNumber').value = found.id_number || '';
+                    document.getElementById('regDob').value = found.date_of_birth || '';
+                    document.getElementById('regGender').value = found.gender || '';
+                    document.getElementById('regNationality').value = found.nationality || 'Kenyan';
+                    document.getElementById('regPhone').value = found.phone || '';
+                    document.getElementById('regEmail').value = found.email || '';
+                    document.getElementById('regAltPhone').value = found.alternative_phone || '';
+
+                    document.getElementById('regParentName').value = found.parent_name || '';
+                    document.getElementById('regParentRelation').value = found.parent_relationship || '';
+                    document.getElementById('regParentPhone').value = found.parent_phone || '';
+                    document.getElementById('regParentEmail').value = found.parent_email || '';
+                    document.getElementById('regParentId').value = found.parent_id || '';
+                    document.getElementById('regParentOcc').value = found.parent_occupation || '';
+                    document.getElementById('regParentAddr').value = found.parent_address || '';
+
+                    document.getElementById('regLocation').value = found.location || '';
+                    document.getElementById('regSublocation').value = found.sublocation || '';
+                    document.getElementById('regVillage').value = found.village || '';
+                    document.getElementById('regPhysicalAddr').value = found.physical_address || '';
+
+                    document.getElementById('regEmergName').value = found.emergency_name || '';
+                    document.getElementById('regEmergRelation').value = found.emergency_relationship || '';
+                    document.getElementById('regEmergPhone').value = found.emergency_phone || '';
+                    document.getElementById('regEmergEmail').value = found.emergency_email || '';
+
+                    document.getElementById('regJoinAs').value = found.join_as || '';
+                    document.getElementById('regSport').value = found.sport || '';
+                    document.getElementById('regExperience').value = found.experience || '';
+                    document.getElementById('regPrevClub').value = found.previous_club || '';
+                    document.getElementById('regReason').value = found.reason || '';
+
+                    document.getElementById('agreement').checked = true;
+
+                    document.querySelectorAll('.form-group input, .form-group select, .form-group textarea').forEach(function(f) {
+                        updateFieldStatus(f);
+                    });
+
+                    loginResult.className = 'login-result success';
+                    loginResult.innerHTML = '<i class="fa-solid fa-check-circle"></i> ✅ Form filled with existing registration data!';
+                    loginResult.style.display = 'block';
+                    showToast('📋 Registration data loaded! You can edit and resubmit.');
+                }
+            };
+
+            checkExistingBtn.addEventListener('click', checkExistingRegistrationUI);
+            loginIdentifier.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') checkExistingRegistrationUI();
+            });
+
+            let longPressTimer = null;
+            let isLongPressing = false;
+
+            const adminAccessBtn = document.getElementById('adminAccessBtn');
+            const adminPanelOverlay = document.getElementById('adminPanelOverlay');
+            const adminSaveBtn = document.getElementById('adminSaveBtn');
+            const adminCloseBtn = document.getElementById('adminCloseBtn');
+            const adminResetBtn = document.getElementById('adminResetBtn');
+            const adminStatus = document.getElementById('adminStatus');
+
+            function startLongPress() {
+                if (isLongPressing) return;
+                isLongPressing = true;
+                longPressTimer = setTimeout(function() {
+                    adminPanelOverlay.classList.add('active');
+                    loadAdminSettingsFromLocalStorage();
+                    isLongPressing = false;
+                    longPressTimer = null;
+                    showToast('🔓 Admin panel unlocked!');
+                }, 20000);
+            }
+
+            function cancelLongPress() {
+                if (longPressTimer) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+                isLongPressing = false;
+            }
+
+            adminAccessBtn.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                startLongPress();
+            });
+            adminAccessBtn.addEventListener('mouseup', cancelLongPress);
+            adminAccessBtn.addEventListener('mouseleave', cancelLongPress);
+
+            adminAccessBtn.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                startLongPress();
+            }, { passive: true });
+            adminAccessBtn.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                cancelLongPress();
+            }, { passive: true });
+            adminAccessBtn.addEventListener('touchcancel', cancelLongPress, { passive: true });
+
+            adminCloseBtn.addEventListener('click', function() {
+                adminPanelOverlay.classList.remove('active');
+                loadAdminSettingsFromLocalStorage();
+            });
+
+            adminSaveBtn.addEventListener('click', async function() {
+                const settings = {
+                    academyName: document.getElementById('adminAcademyName').value.trim(),
+                    sportOptions: document.getElementById('adminSportOptions').value.trim(),
+                    joinOptions: document.getElementById('adminJoinOptions').value.trim(),
+                    experienceOptions: document.getElementById('adminExperienceOptions').value.trim(),
+                    emergencyOptions: document.getElementById('adminEmergencyOptions').value.trim(),
+                    parentRelationOptions: document.getElementById('adminParentRelationOptions').value.trim(),
+                    defaultNationality: document.getElementById('adminDefaultNationality').value.trim(),
+                    invoiceAmount: document.getElementById('adminInvoiceAmount').value.trim(),
+                    invoiceProgramme: document.getElementById('adminInvoiceProgramme').value.trim()
+                };
+
+                const success = await saveAdminSettingsToSupabase(settings);
+                
+                if (success) {
+                    applyAdminSettings(settings);
+                    adminStatus.textContent = '✅ Settings saved to Supabase!';
+                    adminStatus.className = 'admin-status success';
+                    showToast('✅ Settings saved to cloud!');
+                } else {
+                    adminStatus.textContent = '⚠️ Saved locally only. Check connection.';
+                    adminStatus.className = 'admin-status error';
+                    showToast('⚠️ Settings saved locally only');
+                }
+                
+                setTimeout(function() {
+                    adminStatus.className = 'admin-status';
+                }, 4000);
+            });
+
+            adminResetBtn.addEventListener('click', function() {
+                if (confirm('Reset all settings to default values?')) {
+                    const defaults = applyDefaultSettings();
+                    saveAdminSettingsToSupabase(defaults);
+                    adminStatus.textContent = '✅ Settings reset to defaults!';
+                    adminStatus.className = 'admin-status success';
+                    showToast('🔄 Settings reset to defaults!');
+                    setTimeout(function() {
+                        adminStatus.className = 'admin-status';
+                    }, 4000);
+                }
+            });
+
+            adminPanelOverlay.addEventListener('click', function(e) {
+                if (e.target === adminPanelOverlay) {
+                    adminPanelOverlay.classList.remove('active');
+                    loadAdminSettingsFromLocalStorage();
+                }
+            });
+
+            document.getElementById('county').addEventListener('change', function() {
+                if (!window.kenyaLocationData) return;
+                var countyName = this.value;
+                resetConstituency();
+                resetWard();
+                if (!countyName) return;
+
+                var county = window.kenyaLocationData.find(function(item) { return item.name === countyName; });
+                if (!county || !Array.isArray(county.constituencies)) return;
+
+                var constituencySelect = document.getElementById('constituency');
+                constituencySelect.innerHTML = '<option value="">Select Constituency</option>';
+                county.constituencies.forEach(function(c) {
+                    if (c.name) {
+                        var option = document.createElement('option');
+                        option.value = c.name;
+                        option.textContent = c.name;
+                        constituencySelect.appendChild(option);
+                    }
+                });
+                constituencySelect.disabled = false;
+            });
+
+            document.getElementById('constituency').addEventListener('change', function() {
+                if (!window.kenyaLocationData) return;
+                var countyName = document.getElementById('county').value;
+                var constituencyName = this.value;
+                resetWard();
+                if (!countyName || !constituencyName) return;
+
+                var county = window.kenyaLocationData.find(function(item) { return item.name === countyName; });
+                if (!county) return;
+                var constituency = county.constituencies.find(function(item) { return item.name === constituencyName; });
+                if (!constituency || !Array.isArray(constituency.wards)) return;
+
+                var wardSelect = document.getElementById('ward');
+                wardSelect.innerHTML = '<option value="">Select Ward</option>';
+                constituency.wards.forEach(function(w) {
+                    if (w.name) {
+                        var option = document.createElement('option');
+                        option.value = w.name;
+                        option.textContent = w.name;
+                        wardSelect.appendChild(option);
+                    }
+                });
+                wardSelect.disabled = false;
+            });
+
+            if ('IntersectionObserver' in window) {
+                const formInputs = document.querySelectorAll('.form-group input, .form-group select, .form-group textarea');
+                const observer = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                        }
+                    });
+                }, { threshold: 0.1, rootMargin: '0px 0px -100px 0px' });
+
+                formInputs.forEach(function(input) {
+                    input.addEventListener('focus', function() {
+                        setTimeout(function() {
+                            input.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                        }, 300);
+                    });
+                });
+            }
+
+            if (window.dsaBridge) {
+                console.log('🔗 DSA Bridge connected');
+
+                window.dsaBridge.subscribe(function(data) {
+                    console.log('📢 Received from bridge:', data);
+                    if (data.type === 'invoice_updated' || data.type === 'payment') {
+                        showToast('📋 Data updated from another page');
+                    } else if (data.type === 'heartbeat') {
+                        // Bridge is alive
+                    }
+                });
+
+                window.dsaBridge.on('registration', function(data) {
+                    console.log('📋 Registration event received:', data);
+                    showToast('📋 New registration from ' + (data.data?.full_name || 'someone'));
+                });
+
+                console.log('✅ DSA Bridge integration complete');
+            } else {
+                console.warn('⚠️ DSA Bridge not available');
+            }
+
+            setTimeout(loadKenyaLocations, 1000);
+
+            try {
+                var pending = localStorage.getItem('difathar_registration_pending');
+                if (pending) {
+                    var pendingData = JSON.parse(pending);
+                    if (pendingData && pendingData.id_number) {
+                        document.getElementById('regIdNumber').value = pendingData.id_number || '';
+                        document.getElementById('regFullName').value = pendingData.full_name || '';
+                        document.getElementById('regPhone').value = pendingData.phone || '';
+                        document.getElementById('regEmail').value = pendingData.email || '';
+                        showToast('📋 Restored pending registration data', 2000);
+                    }
+                }
+            } catch (e) {}
+
+            initSupabase();
+
+            console.log('✅ Difathar Soccer Academy Registration System v4.1');
+            console.log('☁️ Supabase: ' + (supabaseConnected ? '✅ Connected' : '⚠️ Offline'));
+            console.log('📱 Universal: ✅ Mobile | ✅ Tablet | ✅ Desktop');
+            console.log('🔗 Student ID Format: DSA-YYYY-NNNN (Standardized)');
+            console.log('📄 Invoice Integration: Full Supabase Sync');
+            console.log('🔄 Auto-Invoice: Generated on registration with redirect');
+        });
+    </script>
+</body>
+</html>
